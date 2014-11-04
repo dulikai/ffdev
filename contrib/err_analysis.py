@@ -2,6 +2,13 @@
 import os
 import math
 
+#
+# author: Liu Fang
+# 2014.11.4
+# @ Jinan, Shandong, China
+# @ Shandong Univ.
+#
+
 print "ENERGY and ERR ploter. version 1.0"
 
 class ePlotPro():
