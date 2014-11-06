@@ -18,6 +18,21 @@ class bPESGrid:
     def radical(self, tbl={"start": 0.0, "end": 1.0, "size": 0.1}):
         pass
         
+        
+    def angle(self, mol):
+        return
+        
+    def mk_frg(self, mol, sitelist):
+        """ a list of mole """
+        newmol = bMole()
+        for i in sitelist:
+            mol.append()
+            
+        return
+    def mk_grp(self, mol, frglist):
+        """ split the mole in to fragments and group up"""
+        
+        return
     def radical(self, frglist, center, rad = 3.0):
         """ rad ... """
         frg1 = frglist[0]
