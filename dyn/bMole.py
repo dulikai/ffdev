@@ -3,7 +3,7 @@
 #
 import os
 import numpy as np
-from xyzModel import xyzSingle, xyzModel
+from xyzModel import xyzSingle
 from bRotation import bRotation as rot
 
 
@@ -12,25 +12,23 @@ class bMole:
     """ molecular class """    
     
     def __init__(self):
-        # self.mol = xyz
-        
+         
         return
     
     def extend(self):
         pass
-        
-    def read(self, filename="interface.xyz"):
+    def read(self, filename="phbr.xyz"):
         """ read how many mol in the xyz file"""
         self.mol = xyzSingle()
         self.mol.read(filename)
         return
 
-    def make_plane(self, mylist):
-        geom = self.mol.give(keyword="sites")
-        i = int(mylist[0])
-        j = int(mylist[1])
-        k = int(mylist[2])
-        plane = rot.make_plane(geom[i].pos, geom[j].pos, geom[k].pos)
+    def make_plane(self, i, j, k):
+        geom = self.mol.sites
+        pi = geom[i].pos
+        pj = geom[j].pos
+        pk = geom[k].pos
+        plane = rot.make_plane(pi, pj, pk)
         return plane
         
         
@@ -40,39 +38,18 @@ class bMole:
         get mol plane pmol
         """
         axis, theta = rot.get_axis_theta(pref, pmol)
-        print axis, theta
         sites = self.mol.give(keyword="sites")
         # rot
         for ibody in sites:
             pos = ibody.pos
             ibody.pos = rot.rotate_ar_vector(pos, axis, theta)
         return
-
-    def rotate(self, pref, pmol):
-        """
-        get reference plane pref
-        get mol plane pmol
-        """
-        axis, theta = rot.get_axis_theta(pref, pmol)
-        m = rot.get_mat4v(pref, pmol, np.array([0,3,0]))
-        print axis, theta
-        sites = self.mol.give(keyword="sites")
-        # rot
-        # for ibody in sites:
-            # pos = ibody.pos
-            # pos = np.append(pos, 1.0)
-            # ibody.pos = rot.rotate_ar_vector(pos, axis, theta) 
-            # ibody.pos = np.dot(m, pos)[0:3]
-        self.mol.center_id = -1
-        self.mol.transform(m)    
-        return
-        
         
     def dump(self, filename="mol.xyz"):
         """ file name """
         sites = self.mol.give(keyword="sites")
         n_site = self.mol.give(keyword="n_site")
-        fp = open(filename, "w")
+        fp = open("mol.xyz", "w")
         print >>fp, "%-10d" % n_site
         print >>fp, ""
         for ibody in sites:
@@ -83,27 +60,31 @@ class bMole:
         return
         
 if __name__ == "__main__":
+    ilist = [1]
+    jlist = [2]
+    klist = [3]
+    mylist = [ilist, jlist, klist]
 
-    ref_a = np.array([0.0, 0.0, 0.0])
-    ref_b = np.array([1.0, 0.0, 0.0])
-    ref_c = np.array([0.0, 0.0, 1.0])
-    pref = rot.make_plane(ref_a, ref_b, ref_c)  
+    pi = np.array([0.0, 0.0, 0.0])
+    pj = np.array([1.0, 0.0, 0.0])
+    pk = np.array([0.0, 0.0, 1.0])
+    pref = rot.make_plane(pi, pj, pk)
     
-    # pref = [3, 0, 0, 0] 
+    #pref = [3, 0, 0, 0]    
+
+    xyzfile = "phbr.xyz"
+
     line = input("enter working directory: \n > ")
-    print line
     os.chdir(line)
-    
-    line = input("enter the xyz file name: \n > ")
-    xyzfile = line.strip()
-    line = input("enter three atom to define molecule plane: \n > ")
-    pa, pb, pc = line
-    #
+
+    pa, pb, pc = input("enter list to define molecular plane: \n > ")
     b = bMole()
     b.read(filename=xyzfile)
-    pmol = b.make_plane([pa, pb, pc])
+    
+    pmol = b.make_plane(pa, pb, pc)
+    
     b.rotate(pref, pmol)
-    b.dump()
+    b.dump(filename="mol.xyz")
 
 
         

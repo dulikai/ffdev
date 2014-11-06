@@ -264,6 +264,7 @@ class xyzPoint:
         """Initialise coordinates."""
         self.pos = coord[0:3]
         self.name = name
+        self.frag_id = 0
 
     def __repr__(self):
         """Print complete string representation of vector."""
@@ -345,6 +346,7 @@ class xyzSingle:
         self.center_id = 0
         self.dir_id = [0, 1]
         self.title = ""
+        self.frag_id = 0
         return
         
     def __dir__(self):
@@ -379,7 +381,7 @@ class xyzSingle:
             vel = np.array([float(rec[4]), float(rec[5]), float(rec[6])])
         return name, coord
         
-    def read(self, filename="efp.xyz"):
+    def read(self, filename = "efp.xyz"):
         """
         read cart. coordinate in xyz format
         """
@@ -400,7 +402,7 @@ class xyzSingle:
         fp.close()
         # done
         return
-            
+
         
     def extend(self, xyz):
         """ append another xyz file """
@@ -446,12 +448,9 @@ class xyzSingle:
         n_site = self.n_site
         for i in xrange(n_site):
             m4 = copy.deepcopy(m)
-            # if i == self.center_id:
-                # m4[0:3,0:3] = np.eye(3)
-            print m4[3][0:3]    
-            m4[3][0:3] += self.point(self.center_id)
+            #if i == self.center_id:
+            #    m4[0:3,0:3] = np.eye(3)
             self.sites[i] = self.sites[i].transfrom(m4)
-            # print m4
         return 
             
     def read_xyz(self):
@@ -539,111 +538,7 @@ class xyzModel():
         self.n_xyz += 1
         return
         
-    def read(self, fileName):
-        """Load in the entire file as a list."""
-        self.fileName = fileName
-        try:
-            f=open(fileName, 'r')
-            self.fileContents = f.readlines()
-            f.close()
-        except IOError:
-            sys.stderr.write("Error: could not read in %s\n" % fileName)
-            sys.exit(1)
-        # Load in periodic table for future use
-        self.pt = PeriodicTable()
-        # Check if the file is a Molden file, and if so, remove everything
-        # before the XYZ information
-        # Some useful information and very basic checks
-        firstAtomLine = self.fileContents[0].split()
-        try:
-            self.noOfAtoms = int(firstAtomLine[0])
-        except ValueError:
-            sys.stderr.write("Error: could not read no. of atoms from first "
-                             + "line of XYZ file.\n")
-            sys.exit(1)
-        if self.noOfAtoms <= 0:
-            sys.stderr.write("Error: claimed no. of atoms on first line of " +
-                             "XYZ file is <= 0.\n")
-        # Cursory check of contents
-        if len(self.fileContents) % (self.noOfAtoms + 2) == 0:
-            self.noOfGeoms = len(self.fileContents) / (self.noOfAtoms + 2)
-        else:
-            sys.stderr.write("Error: XYZ file length is not an integer " +
-                             "multiple of claimed individual size.\n")
-            sys.exit(1)
-
-    def getGeom(self, geomNumber):
-        """Return an XYZGeom object containing a Cartesian geometry.
-
-        geomNumber - specifies which geometry in the file should be parsed
-                     (numbered from 0)
-        
-        Return None if the XYZ data could not be parsed.
-
-        """
-        xyzGeom = XYZGeom()
-        # We calculate first line assuming that geomNumber is numbered from 0
-        lineNo = geomNumber * (self.noOfAtoms + 2)
-        claimedAtoms = int(self.fileContents[lineNo].split()[0])
-        if claimedAtoms != self.noOfAtoms:
-            sys.stderr.write("Error: claimed no. of atoms is inconsistent.\n")
-            return None
-        # Ignore the title line
-        lineNo += 2
-        for i in range(self.noOfAtoms):
-            XYZLine = self.fileContents[lineNo].split()
-            try:
-                an = int(XYZLine[0])
-            except ValueError:
-                an = self.pt.getZ(XYZLine[0])
-                if an is None:
-                    sys.stderr.write("Error: first xyz column should be an "
-                                     "atomic number or symbol.\n")
-                    return None
-            try:
-                x = float(XYZLine[1])
-                y = float(XYZLine[2])
-                z = float(XYZLine[3])
-            except ValueError:
-                sys.stderr.write("Error: columns 2-4 should contain xyz " +
-                                 "data separated by spaces.\n")
-                return None
-            xyzGeom.addAtom(an, x, y, z)
-            lineNo += 1
-        return xyzGeom
-
-    def writeSnapshots(self, snapshots, fileName):
-        """Write a new XYZ file containing snapshots from the original file.
-
-        snapshots - list of geometries to be written (numbered from 0)
-        fileName - name of the output file containing the snapshots
-
-        The file is copied as-is, with no further checking beyond that when
-        the object was initialised.
-
-        Return -1 if unsuccessful
-
-        Usage note: snapshots at regular intervals can be taken using 'range'
-          i.e.. snapshots = range([1st snapshot], [total geoms], [interval])
-
-        """
-        try:
-            f=open(fileName, 'w')
-        except IOError:
-            sys.stderr.write("Error: could not open %s" +
-                             "for writing.\n" % fileName)
-            return -1
-        for snap in snapshots:
-            if snap > self.noOfGeoms - 1:
-                sys.stderr.write("Warning: requested snapshot %i is too "
-                                 "large - ignored.\n" % snap)
-                continue
-            startLine = snap * (self.noOfAtoms + 2)
-            for i in range(self.noOfAtoms + 2):
-                f.write(self.fileContents[startLine + i])
-        f.close()
-
-        
+  
         
         
 if __name__ == "__main__":

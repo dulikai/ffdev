@@ -25,7 +25,14 @@ class bRotation:
         norm = np.cross(AB, AC) # (a,b,c)
         d = - np.dot(norm, pA)
         return np.append(norm, d)
-        
+
+
+    @staticmethod
+    def get_trans_mat4(vec):
+        m = np.eye(4)
+        m[0:3,3] = vec
+        return m
+    
     @staticmethod    
     def get_axis_theta(v1, v2):
         """
@@ -37,7 +44,6 @@ class bRotation:
         axis = np.cross(vi, vj)
         if np.linalg.norm(axis) < 1.0e-15:
             print "vector i \cross j is zero !!!", vi, vj
-            exit(1)
             axis = np.array([0., 0., 1.])
             theta = 0.0
         else:    
@@ -62,7 +68,7 @@ class bRotation:
         0 & 0 & 0 &  1 \\
         \end{bmatrix}
         """
-        m = np.zeros((3,3))
+        m = np.zeros((4,4))
         axis = axis / np.linalg.norm(axis)
         cost = np.cos(theta); sint = np.sin(theta)
         x = axis[0]; y = axis[1]; z = axis[2]
@@ -70,12 +76,19 @@ class bRotation:
         m[0][0] = cost + x*x*(1-cost)
         m[0][1] = x*y*(1-cost) + z*sint
         m[0][2] = x*z*(1-cost) - y*sint
+        m[0][3] = 0.0
         m[1][0] = x*y*(1-cost) - z*sint
         m[1][1] = cost + y*y*(1-cost)
         m[1][2] = z*y*(1-cost) + x*sint
+        m[1][3] = 0.0
         m[2][0] = x*z*(1-cost) + y*sint
         m[2][1] = y*z*(1-cost) - x*sint
         m[2][2] = cost + z*z*(1-cost)
+        m[2][3] = 0.0
+        m[3][0] = 0.0
+        m[3][1] = 0.0
+        m[3][2] = 0.0
+        m[3][3] = 1.0
         return m
     
         
@@ -148,7 +161,7 @@ class bRotation:
         v1 v2 is the directional vector
         """
         axis, theta = bRotation.get_axis_theta(v1, v2)
-        # print axis, theta
+        #print axis, theta
         m = bRotation.get_rot_mat4(axis, theta)        
         return m
         

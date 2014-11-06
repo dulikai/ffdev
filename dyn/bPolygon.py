@@ -3,31 +3,31 @@
 import os
 import copy
 import numpy as np
-from bStatus import bStatus
 from bRotation import bRotation
 from xyzModel import xyzSingle, xyzModel
 
 # symmetry builder
 
 class bPolygon:
-    status = bStatus()
     polygon = {}
     
-    def regular_polygon(self, n=3, rad=3.0, theta=0.0, theta0=0.0, mode="polygon"):
-        """ build regular polygonal distribution 
-            job may 'circle' or 'polygen'
-        """
+    def regular_polygon(self, n=3, rad=3.0, theta=0.0, theta0=0.0, mode="circle"):
+        """ build regular polygonal distribution """
         if n < 3:
             print "n < 3 in regular_polygon (??) !!!"
             exit(1)
         theta = theta / 180.0 * np.pi
         theta0 = theta0 / 180.0 * np.pi
         dt = 2.0 * np.pi / n
-        # dist = np.sqrt(2.0 * rad * rad * (1 - np.cos(dt)))
-        # print dist
+        dist = np.sqrt(2.0 * rad * rad * (1 - np.cos(dt)))
+        print dist
+
         if mode == "polygon":
-            rad = rad / np.sqrt(2.0*(1-np.cos(dt)))
-            print rad
+            dist = rad
+            rad = dist / np.sqrt(2.0*(1-np.cos(dt)))
+
+        bis_ang = np.arccos(dist/rad/2)
+        
         # polygon vertices
         vertices = []
         for i in xrange(n):
@@ -48,10 +48,8 @@ class bPolygon:
         # the branches, that is X ---> A vector
         branches = []
         axis = np.array([0., 0., 1.])   # norm of the polygon plane (z axis)
-        for i in xrange(n):
-            vec = edges[i] 
-            v = bRotation.rotate_ar_vector(vec, axis, theta) 
-            print theta
+        for vec in edges:
+            v = bRotation.rotate_ar_vector(vec, axis, theta+bis_ang)
             # print v, vec, axis, theta
             branches.append(v)
         plane = bRotation.make_plane(vertices[0], vertices[1], vertices[2])
@@ -64,21 +62,25 @@ class bPolygon:
         branches = self.polygon['branches']
         n_sides = self.polygon['n_sides']
         mat = []
+        mt1 = bRotation.get_trans_mat4(-origin)
+
         for i in xrange(n_sides):
             # print vec, branches[i], origin, vertices[i]
-            a, b = bRotation.get_axis_theta(vec, branches[i])
-            va = np.array([1.0, 1.0, 0.0])
-            vb = np.array([1.0, 0.0, 0.0])
-            m = bRotation.get_mat4t(vec, branches[i], origin, vertices[i]) 
-            m = bRotation.get_mat4t(vec, branches[i], origin, origin) 
-            # m = bRotation.get_mat4t(va, vb, origin, vertices[i]) 
-           
+            mt2 = bRotation.get_trans_mat4(vertices[i])
+
+            mr = bRotation.get_rot_mat4v(vec, branches[i])
+ 
+            m = np.dot(mr, mt1)
+
+            m = np.dot(mt2, m)
+            
+            #m = bRotation.get_mat4t(vec, branches[i], origin, vertices[i]) 
             mat.append(m)
         self.polygon['mapping'] = mat
         return
         
-    def dump(self, filename="polygon.xyz"):
-        fp = open(filename, "w")
+    def print_polygon(self):
+        fp = open("polygon.xyz", "w")
         vertices = self.polygon['vertices']
         branches = self.polygon['branches']
         plane = self.polygon['plane']
@@ -106,48 +108,6 @@ class bPolygon:
             mol.extend(t)
         return mol
     
-    
-    def build_test(self, config):
-        # mole
-        core = config['mole']['core']
-        direction = config['mole']['direction']
-        
-        # shape
-        n_sides = config['polygen']['n_sides']
-        t0 = config['polygen']['theta0']
-        mode = config['polygen']['mode']
-        # min max step
-        rmin = config['radii']['min']
-        rmax = config['radii']['max']
-        rsize = config['radii']['size']
-        tmin = config['theta']['min']
-        tmax = config['theta']['max']
-        tsize = config['theta']['size']
-        # files
-        xyzfile = config['file']['xyz']
-        #
-        xyz = xyzSingle()
-        xyz.read(filename=xyzfile)
-        origin, vec = xyz.set_info(origin=core, direction=direction)
-        #
-        rnum = int((rmax-rmin) / rsize)
-        tnum = int((tmax-tmin) / tsize)  
-        # 
-        polygon = bPolygon()
-        model = xyzModel()
-        v = np.array([0.0, 1.0, 0.0])
-        for j in xrange(tnum):
-            t = tmin + j * tsize 
-            mx = bRotation.get_rot_mat4v(v, vec)
-            polygon.mapping(origin, vec)
-
-                # polygon.print_polygon(str(i)+str(j)+".xyz")
-            newxyz = polygon.images(xyz)
-            model.extend(newxyz)
-                # print len(newxyz.sites)
-        model.dump()
-        # print model.n_xyz
-        return    
     def build(self, config):
     
         # mole
@@ -155,9 +115,9 @@ class bPolygon:
         direction = config['mole']['direction']
         
         # shape
-        n_sides = config['polygen']['n_sides']
-        t0 = config['polygen']['theta0']
-        mode = config['polygen']['mode']
+        n_sides = config['polygon']['n_sides']
+        t0 = config['polygon']['theta0']
+        mode = config['polygon']['mode']
         # min max step
         rmin = config['radii']['min']
         rmax = config['radii']['max']
@@ -165,17 +125,17 @@ class bPolygon:
         tmin = config['theta']['min']
         tmax = config['theta']['max']
         tsize = config['theta']['size']
-        # files
+        # fies
         xyzfile = config['file']['xyz']
         #
         xyz = xyzSingle()
         xyz.read(filename=xyzfile)
         origin, vec = xyz.set_info(origin=core, direction=direction)
-        #
+        polygon = bPolygon()
+        
         rnum = int((rmax-rmin) / rsize)
         tnum = int((tmax-tmin) / tsize)  
         # 
-        polygon = bPolygon()
         model = xyzModel()
         for i in xrange(rnum):
             for j in xrange(tnum):
@@ -183,8 +143,6 @@ class bPolygon:
                 t = tmin + j * tsize        
                 polygon.regular_polygon(n=n_sides, rad=r, theta=t, theta0=t0, mode=mode)
                 polygon.mapping(origin, vec)
-
-                # polygon.print_polygon(str(i)+str(j)+".xyz")
                 newxyz = polygon.images(xyz)
                 model.extend(newxyz)
                 # print len(newxyz.sites)
@@ -211,40 +169,32 @@ class bPolygon:
 #
 #        
 if __name__ == "__main__":
-
-    line = input("enter working directory: \n > ")
-    print line
-    os.chdir(line.strip())
-    
     # template
     # xyz = xyzSingle()
-    # xyz.read(filename="mol.xyz")
-    # xyz.dump(filename="tmp.xyz")
-    # origin, vec = xyz.set_info(origin=11, direction=5)
-    
+    # xyz.read()
+    # origin, vec = xyz.set_info(origin=0, direction=1)
     # polygon = bPolygon()
-    # polygon.regular_polygon(n=3, rad=8.0, theta=30.0, theta0=0.0)
-    # polygon.dump(filename="polygon.xyz")
-    
+    # polygon.regular_polygon(n=5, rad=8.0, theta=3.0, theta0=0.0)
     # polygon.mapping(origin, vec)
-    
     # newxyz = polygon.images(xyz)
+    # newxyz.dump()
     
-    # newxyz.dump(filename="newxyz.xyz")
-    
-    
-    # exit(1)
-   
     # polygon.print_polygon()
-   
+
+    line = input("enter working directory: \n > ")
+    os.chdir(line)
+
+    xyzfile = input("xyz file name: \n > ")
     
+    core, direction = input("enter X A number id: \n > ")
+
     
     config = {}
     config['radii'] = {'min': 3, 'max': 6, 'size': 0.1}
-    config['theta'] = {'min': 0, 'max': 120, 'size': 10}
-    config['polygen'] = {'n_sides': 3, 'theta0': 8, 'mode': 'circle'}
-    config['mole'] = {'core': 11, 'direction': 5}
-    config['file'] = {'xyz': "mol.xyz"}
+    config['theta'] = {'min': -50, 'max': 50, 'size': 5}
+    config['polygon'] = {'n_sides': 3, 'theta0': 8, 'mode': 'polygon'}
+    config['mole'] = {'core': core, 'direction': direction}
+    config['file'] = {'xyz': xyzfile}
     polygon = bPolygon()
     polygon.build(config)
     
