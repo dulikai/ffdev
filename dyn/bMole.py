@@ -7,6 +7,89 @@ from xyzModel import xyzSingle
 from bRotation import bRotation as rot
 
 
+class atomicPoint:
+    """Hold a 3 dimensional Cartesian coordinate vector."""
+    name = "Ar"
+    pos = np.zeros(3)
+
+    def __init__(self, coord=np.zeros(3), name="C"):
+        """Initialise coordinates."""
+        self.pos = coord[0:3]
+        self.name = name
+        self.frag_id = 0
+
+    def __repr__(self):
+        """Print complete string representation of vector."""
+        return 'XYZPoint(' + repr(self.pos[0]) + ', ' + repr(self.pos[1]) + ', ' + \
+               repr(self.pos[2]) + ')'
+
+    def __str__(self):
+        """Return simple string representation of vector to 5dp."""
+        return '(%.6f, %.6f, %.6f)' % (self.pos[0], self.pos[1], self.pos[2])
+
+    def __add__(self, other):
+        """Overloads the '+' operator to add two vectors."""
+        pos = self.pos + other.pos
+        return xyzPoint(pos, self.name)
+
+    def __iadd__(self, other):
+        """Overloads the '+=' operator to add other to self in place."""
+        self.pos += other.pos
+        return
+        
+    def __sub__(self, other):
+        """Overloads the '-' operator to subtract two vectors."""
+        pos = self.pos - other.pos
+        return xyzPoint(pos, self.name)
+
+    def __isub__(self, other):
+        """Overloads the '-=' operator to subtract other from self in place."""
+        self.pos -= other.pos
+        return
+
+    def scale(self, factor):
+        """Return the vector multiplied by a scalar factor."""
+        factor = float(factor)
+        pos = self.pos * factor
+        return xyzPoint(pos, self.name)
+
+    def dotProduct(self, other):
+        """Returns the dot (scalar) product of two vectors."""
+        dotp = np.dot(self.pos, other.pos)
+        return xyzPoint(dotp, self.name)
+
+    def crossProduct(self, other):
+        """Returns the cross (vector) product of two vectors."""
+        pos = np.cross(self.pos, other.pos)
+        return xyzPoint(pos, self.name)   
+
+    def getNorm(self):
+        """Return the euclidean norm of the vector."""
+        norm = np.linalg.norm(self.pos)
+        return norm
+
+    def normalise(self):
+        """Return the vector after normalisation.
+
+        If the normalisation factor is zero, the original (zero-)vector is
+        returned unchanged.
+        """
+        try:
+            normFactor = 1.0 / self.getNorm()
+        except ZeroDivisionError:
+            normFactor = 1.0
+        return self.scale(normFactor)
+        
+    def transfrom(self, m):
+        """ return m x point
+        transformation of a point
+        """
+        pos = np.append(self.pos, 1.0)
+        pos = np.dot(m, pos)
+        return xyzPoint(pos[0:3], self.name)
+            
+            
+
 # this class aims to deal with one molecular structure..
 class bMole:
     """ molecular class """    
@@ -14,6 +97,12 @@ class bMole:
     def __init__(self):
          
         return
+    
+    def slice(self, sitelist):
+        """ a list of mole """
+        newmol = bMole()
+        for i in sitelist:
+            mol.append()
     
     def extend(self):
         pass
