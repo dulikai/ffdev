@@ -1,0 +1,21 @@
+#IN THIS FILE YOU CAN ENTER THE FILE NAMES THAT WOULD BE READ IN AND WRITE OUT BY 
+#THIS PROGRAMS
+
+#the structure of the molecule, ie the gjf file..
+#file name     type
+ala/ala.gjf        xyz
+
+#the name of database file ie. il.ff and the attribution
+#db parameter is aviable for db2 amino acid db.
+#   file name         database type   db para
+data/amino-acid.ff        B             Ala
+
+#template file to control sth. of the itp output file..
+ala/ItpTemplate-AA.txt
+
+
+#the output file name of the top file, mainly itp files.
+ala/ala.itp
+ala/ala-nob.itp
+
+

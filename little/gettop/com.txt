@@ -1,0 +1,58 @@
+vertex value
+id|inode:   1| -1  element name: C  ffname: C unique name: C1
+id|inode:   2| -1  element name: O  ffname: O2 unique name: O21
+id|inode:   3| -1  element name: O  ffname: O2 unique name: O22
+id|inode:   4| -1  element name: C  ffname: CT unique name: CT1
+id|inode:   5| -1  element name: H  ffname: H1 unique name: H11
+id|inode:   6| -1  element name: H  ffname: H1 unique name: H12
+id|inode:   7| -1  element name: N  ffname: N3 unique name: N31
+id|inode:   8| -1  element name: H  ffname: H unique name: H1
+id|inode:   9| -1  element name: H  ffname: H unique name: H2
+bond value
+id  1: 1 2
+id  2: 1 3
+id  3: 1 4
+id  4: 4 5
+id  5: 4 6
+id  6: 4 7
+id  7: 7 8
+id  8: 7 9
+angle value
+id  1: 1 4 5
+id  2: 1 4 6
+id  3: 1 4 7
+id  4: 2 1 3
+id  5: 2 1 4
+id  6: 3 1 4
+id  7: 4 7 8
+id  8: 4 7 9
+id  9: 5 4 6
+id 10: 5 4 7
+id 11: 6 4 7
+id 12: 8 7 9
+dihedral value
+id  1: 1 4 7 8
+id  2: 1 4 7 9
+id  3: 2 1 4 5
+id  4: 2 1 4 6
+id  5: 2 1 4 7
+id  6: 3 1 4 5
+id  7: 3 1 4 6
+id  8: 3 1 4 7
+id  9: 5 4 7 8
+id 10: 5 4 7 9
+id 11: 6 4 7 8
+id 12: 6 4 7 9
+pair value
+id  1: 1 8
+id  2: 1 9
+id  3: 2 5
+id  4: 2 6
+id  5: 2 7
+id  6: 3 5
+id  7: 3 6
+id  8: 3 7
+id  9: 5 8
+id 10: 5 9
+id 11: 6 8
+id 12: 6 9

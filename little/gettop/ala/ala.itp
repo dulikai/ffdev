@@ -1,0 +1,110 @@
+;FIRST: generate automation
+;SECOND: improper not included default
+;THIRD: no responsibile to the correct of this top file
+;AT LAST: MAYBE IT'S USEFUL
+[ moleculetype ]
+; name  nrexcl
+ALA       3
+
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
+    1     opls_2001   1    ALA   CTN1     1      0.52180     12.01100   ; qtot 0.52180
+    2     opls_2002   1    ALA     C1     1      0.74450     12.01100   ; qtot 1.26630
+    3     opls_2003   1    ALA    O21     1     -0.82230     15.99900   ; qtot 0.44400
+    4     opls_2003   1    ALA    O22     1     -0.82230     15.99900   ; qtot -0.37830
+    5     opls_2004   1    ALA    N31     1     -1.14890     14.00700   ; qtot -1.52720
+    6     opls_2005   1    ALA     H1     1      0.36420      1.00800   ; qtot -1.16300
+    7     opls_2005   1    ALA     H2     1      0.36420      1.00800   ; qtot -0.79880
+    8     opls_2006   1    ALA    H11     1     -0.08680      1.00800   ; qtot -0.88560
+    9     opls_2007   1    ALA   CTC1     1     -0.07870     12.01100   ; qtot -0.96430
+   10     opls_2008   1    ALA    HC1     1     -0.01190      1.00800   ; qtot -0.97620
+   11     opls_2008   1    ALA    HC2     1     -0.01190      1.00800   ; qtot -0.98810
+   12     opls_2008   1    ALA    HC3     1     -0.01190      1.00800   ; qtot -1.00000
+
+[ bonds ]
+;  ai    aj funct           c0           c1
+   1     2   1       1.555300e-001  2.652660e+005     ; CTN-C
+   1     5   1       1.464300e-001  3.071060e+005     ; CTN-N3
+   1     8   1       1.085700e-001  2.719600e+005     ; CTN-H1
+   1     9   1       1.529300e-001  2.594080e+005     ; CTN-CTC
+   2     3   1       1.237700e-001  4.184000e+005     ; C-O2
+   2     4   1       1.237700e-001  4.184000e+005     ; C-O2
+   5     6   1       1.004400e-001  3.765600e+005     ; N3-H
+   5     7   1       1.004400e-001  3.765600e+005     ; N3-H
+   9    10   1       1.086800e-001  2.769800e+005     ; CTC-HC
+   9    11   1       1.086800e-001  2.769800e+005     ; CTC-HC
+   9    12   1       1.086800e-001  2.769800e+005     ; CTC-HC
+
+[ pairs ]
+;  ai    aj funct           c0           c1
+   2     6   1                                  ; C--H
+   2     7   1                                  ; C--H
+   2    10   1                                  ; C--HC
+   2    11   1                                  ; C--HC
+   2    12   1                                  ; C--HC
+   3     5   1                                  ; O2--N3
+   3     8   1                                  ; O2--H1
+   3     9   1                                  ; O2--CTC
+   4     5   1                                  ; O2--N3
+   4     8   1                                  ; O2--H1
+   4     9   1                                  ; O2--CTC
+   5    10   1                                  ; N3--HC
+   5    11   1                                  ; N3--HC
+   5    12   1                                  ; N3--HC
+   6     8   1                                  ; H--H1
+   6     9   1                                  ; H--CTC
+   7     8   1                                  ; H--H1
+   7     9   1                                  ; H--CTC
+   8    10   1                                  ; H1--HC
+   8    11   1                                  ; H1--HC
+   8    12   1                                  ; H1--HC
+
+[ angles ]
+;  ai    aj    ak funct           c0           c1
+   1     2     3   1       1.155200e+002  6.694400e+002     ; CTN-C-O2
+   1     2     4   1       1.155200e+002  6.694400e+002     ; CTN-C-O2
+   1     5     6   1       1.071900e+002  4.184000e+002     ; CTN-N3-H
+   1     5     7   1       1.071900e+002  4.184000e+002     ; CTN-N3-H
+   1     9    10   1       1.104700e+002  3.556400e+002     ; CTN-CTC-HC
+   1     9    11   1       1.104700e+002  3.556400e+002     ; CTN-CTC-HC
+   1     9    12   1       1.104700e+002  3.556400e+002     ; CTN-CTC-HC
+   2     1     5   1       1.142200e+002  7.531200e+002     ; C-CTN-N3
+   2     1     8   1       1.077200e+002  4.853400e+002     ; C-CTN-H1
+   2     1     9   1       1.094500e+002  5.020800e+002     ; C-CTN-CTC
+   3     2     4   1       1.289400e+002  7.112800e+002     ; O2-C-O2
+   5     1     8   1       1.079200e+002  5.020800e+002     ; N3-CTN-H1
+   5     1     9   1       1.091900e+002  5.020800e+002     ; N3-CTN-CTC
+   6     5     7   1       1.037000e+002  4.184000e+002     ; H-N3-H
+   8     1     9   1       1.081600e+002  3.933000e+002     ; H1-CTN-CTC
+  10     9    11   1       1.084600e+002  3.205000e+002     ; HC-CTC-HC
+  10     9    12   1       1.084600e+002  3.205000e+002     ; HC-CTC-HC
+  11     9    12   1       1.084600e+002  3.205000e+002     ; HC-CTC-HC
+
+[ dihedrals ]
+;  ai    aj    ak    al  funct       c0           c1        multi
+   2     1     5     6   1         0.000000    0.418000      3    ; C-CTN-N3-H
+   2     1     5     7   1         0.000000    0.418000      3    ; C-CTN-N3-H
+   2     1     9    10   1         0.000000    0.653000      3    ; C-CTN-CTC-HC
+   2     1     9    11   1         0.000000    0.653000      3    ; C-CTN-CTC-HC
+   2     1     9    12   1         0.000000    0.653000      3    ; C-CTN-CTC-HC
+   3     2     1     5   1         0.000000    0.962000      2    ; O2-C-CTN-N3
+   3     2     1     8   1         0.000000    0.000000      2    ; O2-C-CTN-H1
+   3     2     1     9   1         0.000000    0.000000      2    ; O2-C-CTN-CTC
+   4     2     1     5   1         0.000000    0.962000      2    ; O2-C-CTN-N3
+   4     2     1     8   1         0.000000    0.000000      2    ; O2-C-CTN-H1
+   4     2     1     9   1         0.000000    0.000000      2    ; O2-C-CTN-CTC
+   5     1     9    10   1         0.000000    0.653000      3    ; N3-CTN-CTC-HC
+   5     1     9    11   1         0.000000    0.653000      3    ; N3-CTN-CTC-HC
+   5     1     9    12   1         0.000000    0.653000      3    ; N3-CTN-CTC-HC
+   6     5     1     8   1         0.000000    0.418000      3    ; H-N3-CTN-H1
+   6     5     1     9   1         0.000000    0.418000      3    ; H-N3-CTN-CTC
+   7     5     1     8   1         0.000000    0.418000      3    ; H-N3-CTN-H1
+   7     5     1     9   1         0.000000    0.418000      3    ; H-N3-CTN-CTC
+   8     1     9    10   1         0.000000    0.653000      3    ; H1-CTN-CTC-HC
+   8     1     9    11   1         0.000000    0.653000      3    ; H1-CTN-CTC-HC
+   8     1     9    12   1         0.000000    0.653000      3    ; H1-CTN-CTC-HC
+
+; warning也许存在非正常二面角，but我没有生成improper dihedrals, 不想写了，自己加上吧...
+;warning improper dihedrals don't included, I don't want to do that, do it yourself
+;I can't promise this file is correct, thank you.
+;^_^

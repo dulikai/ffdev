@@ -1,0 +1,61 @@
+#atomtypes section
+; name  bond_type        mass    charge     ptype     sigma       epsilon
+
+$type: you can enter prefix 'opls', then the counter start number
+opls 1000
+
+$ptype
+A
+
+
+#mol section
+; name  nrexcl
+BMIM      3
+
+
+#atoms section
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
+
+$resnr: default 1
+1
+
+$cgnr : default 1
+1
+
+$qtot : 0 not computed and printed, 1 for yes.
+1
+
+
+#bonds section
+;  ai    aj funct           c0           c1
+
+$funct
+1
+
+
+#pairs section
+;  ai    aj funct           c0           c1
+
+$funct
+1
+
+
+#angles section
+;  ai    aj    ak funct           c0           c1
+
+$funct
+1
+
+
+#dihedral section
+;  ai    aj    ak    al funct     c0        c1        c2          c3       c4       c5
+
+$funct
+1
+
+#if 0 don't print , else print it, value it,and print
+$multi
+0
+
+
+

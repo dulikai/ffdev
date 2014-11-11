@@ -1,0 +1,441 @@
+# amino acid parameter file
+# Molecular force field for ionic liquids
+#parameter adopt :
+#Guohui Zhoua,b, Xiaomin Liua,b, Suojiang Zhanga,*, Guangren Yua,b, Hongyan He
+#Research Laboratory of Green Chemistry and Technology, Institute of Process Engineering, 
+#Chinese Academy of Sciences, 100080, Beijing, China 
+#Graduate University of Chinese Academy of Sciences, 100049, Beijing, China
+#convert from the support information of this article :
+#A Force Field for Molecular Simulation of Tetrabutylphosphonium Amino Acid Ionic
+#J. Phys. Chem. B 2007, 111, 7078-7084
+#added by dulikai
+#date 2008.12.25  
+#unit [angstroms] [amu] [kjmol-1] [e] [deg]
+
+#below contain a series of aa, and they are:
+ENTITY
+Gly Ala Tau b-Ala  
+
+ATOMS
+#Van der Waals Parameters
+#atoms  sig(Angstroms)   eps (kJmol-1) mass(amu)     source  description 
+CT     3.3997          0.4577          12.011        AMBER  any sp3 carbon                                                             
+C      3.3997          0.3598          12.011        AMBER  any carbonyl sp2 carbon                                                    
+C*     3.3997          0.3598          12.011        AMBER  sp2 carbon in carboxyl and acylamino groups                                
+CA     3.3997          0.3598          12.011        AMBER  aromatic sp2 carbon in [Phe]-                                                 
+N      3.2500          0.7113          14.007        AMBER  sp2 nitrogen in amides                                                     
+N3     3.3409          0.7113          14.007        AMBER  sp3 nitrogen                                                               
+N3*    3.3409          0.7113          14.007        AMBER  sp3 nitrogen that isn¡¯t the one bonded to ¦Á-carbon atom                  
+OH     3.0665          0.8803          15.999        AMBER  sp3 oxygen in alcohols, tyrosine, and protonated carboxylic acids          
+O      2.9599          0.8786          15.999        AMBER  sp2 oxygen in amides                                                       
+O2     2.9599          0.8786          15.999        AMBER  sp2 oxygen in anionic acids                                                
+S      3.5636          1.0460          32.066        AMBER  sulfur in methionine                                                       
+P      3.7418          0.8368          30.974        AMBER  phosphorus in tetrabutylphosphonium                                        
+H      1.0691          0.0657           1.008        AMBER  H attached to N                                                            
+HO     0.0002          0.0000           1.008        AMBER  H in alcohols and acids                                                    
+HA     2.5996          0.0628           1.008        AMBER  H attached to aromatic carbon                                              
+HC     2.6495          0.0657           1.008        AMBER  H attached to aliphatic carbon with no electron-withdrawing substituents   
+H1     2.4714          0.0657           1.008        AMBER  H attached to aliphatic carbon with one electron-withdrawing substituent   
+HP     1.9600          0.0657           1.008        AMBER  H attached to carbon directly bonded to formally positive atoms            
+
+#CHARGES
+#warn: each section $ must seperate by one blank line, if more than more, program may terminate.
+#and stop reading this section.
+# i      q/e
+$Gly
+CT     0.3278
+C      0.9152
+O2    -0.8798
+N3    -1.0956
+H      0.3652
+H1    -0.0591
+
+$Ala
+CTN    0.5218
+CTC   -0.0787
+C      0.7445
+O2    -0.8223
+N3    -1.1489
+HC    -0.0119
+H1    -0.0868
+H      0.3642
+
+$Tau
+CTN    0.4117
+CTC   -0.2084
+S      1.2539
+N3*   -1.0488
+O2    -0.7272
+H      0.3463
+H1    -0.0240
+HC     0.0643
+
+
+TRANSLATION
+CT  CTC
+CT  CTH
+CT  CTN
+
+
+BONDS
+#force constants
+#bonds      Kr (kJ*mol-1*A-2)     source 
+CT-CT        1297.04              AMBER               
+CT-C         1326.33              AMBER               
+CT-N3        1535.53              AMBER               
+CT-N3*       1535.53              AMBER               
+CT-OH        1673.60              JPCB111-7078         
+CT-P         878.64               JPCB111-7078
+CT-HC        1384.90              JPCB111-7078       
+CT-H1        1359.80              JPCB111-7078        
+CT-HP        1407.92              JPCB111-7078                    
+C-O2         2092.00              JPCB111-7078         
+N3-H         1882.80              JPCB111-7078         
+N3*-H        1882.80              JPCB111-7078         
+OH-HO        2280.28              AMBER            
+CT-C*        1326.3               AMBER           
+CT-CA        1326.33              AMBER          
+CT-S         1108.76              JPCB111-7078   
+C*-N         2050.16              AMBER           
+C*-OH        1464.40              JPCB111-7078       
+C*-O         2384.88              AMBER          
+CA-CA        1673.60              JPCB111-7078         
+CA-HA        1502.06              JPCB111-7078        
+N-H          1907.90              JPCB111-7078 
+S-O2         2217.52              JPCB111-7078        
+
+#BOND DISTANCE
+# r0(Angstroms) 
+$Gly
+CT-C         1.5499
+CT-N3        1.4608
+CT-H1        1.0864
+C-O2         1.2377 
+N3-H         1.0036
+
+$Ala
+CT-CT        1.5293
+CT-C         1.5553
+CT-N3        1.4643
+CT-HC        1.0868
+CT-H1        1.0857 
+C-O2         1.2377
+N3-H         1.0044
+
+$b-Ala
+CT-CT        1.5202
+CT-C         1.5508
+CT-N3*       1.4715 
+CT-HC        1.0888
+CT-H1        1.0853
+C-O2         1.2373
+N3*-H        1.0032
+
+$Tau
+CT-CT        1.5210
+CT-N3*       1.4675 
+CT-HC        1.0843
+CT-H1        1.0842
+CT-S         1.7941
+N3*-H        1.0030
+S-O2         1.4577
+
+
+
+bonds         Kr (kJ mol-1 A-2)             r0(A)                                      source 
+
+                      [P(C4)4]+ [Gly]- [Ala]- [beta-Ala]- [Leu]- [Ile]- [Ser]- [Lys]- [Asp]- [Glu]- [Gln]- [Pro]- [Phe]- [Met]- [Tau]-
+ 
+ 
+
+CT-CT  1297.04   1.5334   1.5293 1.5202 1.5342 1.5381 1.5279  AMBER 
+CT-C   1326.33    1.5499 1.5553 1.5508 1.5533 1.5591 1.5549   AMBER 
+CT-N3  1535.53    1.4608 1.4643  1.4671 1.4678 1.4573         AMBER 
+CT-N3* 1535.53   1.4715                                       AMBER 
+CT-OH 1673.60         1.4102                                 JPCB111-7078 
+CT-P  878.64     1.8273                                               JPCB111-7078 
+CT-HC  1384.90    1.0860   1.0868 1.0888 1.0879 1.0870         JPCB111-7078 
+CT-H1  1359.80    1.0864 1.0857 1.0853 1.0840 1.0858 1.0849   JPCB111-7078 
+CT-HP 1407.92    1.0862                                      JPCB111-7078 
+C-O2  2092.00    1.2374 1.2377 1.2373 1.2380 1.2374 1.2360   JPCB111-7078 
+N3-H  1882.80    1.0036 1.0044  1.0045 1.0039 1.0038         JPCB111-7078 
+N3*-H 1882.80   1.0032                                       JPCB111-7078 
+OH-HO 2280.28         0.9515                                 AMBER 
+
+
+
+CT-CT  1297.04  1.5295 1.5322 1.5375 1.5408 1.5337 1.5375 1.5320 1.5210  AMBER
+CT-C  1326.33  1.5539 1.5298 1.5543 1.5580 1.5510 1.5607 1.5545               AMBER
+CT-C*  1326.33    1.5019 1.5019 1.5166                                        AMBER
+CT-CA 1326.33      1.5181                                                      AMBER
+CT-N3  1535.53  1.4647 1.4603 1.4637 1.4602 1.4634 1.4607 1.4640          AMBER
+CT-N3* 1535.53 1.4627        1.4675                                            AMBER
+CT-HC  1384.90  1.0884 1.0857 1.0839 1.0844 1.0883 1.0844 1.0868 1.0843  JPCB111-7078
+CT-H1  1359.80  1.0875 1.0884 1.0855 1.0956 1.0853 1.0894 1.0833 1.0842  JPCB111-7078
+CT-S 1108.76        1.8179 1.7941                                        JPCB111-7078
+C-O2  2092.00  1.2379 1.2346 1.2368 1.2366 1.2369 1.2367 1.2373             JPCB111-7078
+C*-N 2050.16    1.3436                                                        AMBER
+C*-OH 1464.40   1.3375 1.3412                                             JPCB111-7078
+C*-O  2384.88    1.1947 1.1942 1.2139                                         AMBER
+CA-CA 1673.60      1.3903                                               JPCB111-7078
+CA-HA 1502.06      1.0765                                                JPCB111-7078
+N-H  1907.90   1.0014                                                   JPCB111-7078
+N3-H  1882.80  1.0045 1.0025 1.0044 1.0022 1.0017 1.0039 1.0044            JPCB111-7078
+N3*-H 1882.80 1.0025        1.0030                                              JPCB111-7078
+OH-HO 2280.28   0.9503 0.9510                                                  AMBER
+S-O2 2217.52            1.4577                                           JPCB111-7078
+!
+
+
+
+ANGLES
+#Angle Parameters
+#angle force constant[kj*mol-1*rad-2] Ktheta
+CT-CT-CT     171.54
+CT-CT-C      251.04
+CT-CT-N3     251.04
+CT-CT-N3*    292.88
+CT-CT-OH     230.12
+CT-CT-P      313.80
+CT-CT-HC     177.82
+CT-CT-H1     196.65
+CT-CT-HP     129.70
+C-CT-N3      376.56
+C-CT-H1      242.67
+C-CT-HC      209.20
+N3-CT-H1     251.04
+N3*-CT-H1    251.04
+P-CT-HP      135.98
+HC-CT-HC     160.25
+H1-CT-H1     161.08
+HP-CT-HP     153.55
+CT-C-O2      334.72
+O2-C-O2      355.64
+CT-N3-H      209.20
+CT-N3*-H     209.20
+H-N3-H       209.20
+H-N3*-H      209.20
+CT-OH-HO     213.38
+CT-P-CT      209.20
+CT-CT-C*     251.04 
+CT-CT-CA     263.59 
+CT-CT-S      188.28  
+C*-CT-HC     209.20 
+CA-CT-HC     175.73  
+S-CT-HC      188.28 
+S-CT-H1      179.91 
+CT-C*-N      292.88 
+CT-C*-OH     334.72 
+CT-C*-O      355.64 
+N-C*-O       418.40 
+OH-C*-O      418.40 
+CT-CA-CA     292.88 
+CA-CA-CA     263.59 
+CA-CA-HA     158.99 
+C*-N-H       188.28 
+H-N-H        125.52 
+CT-N3-CT     334.72  
+C*-OH-HO     255.22 
+CT-S-CT      230.12 
+CT-S-O2      334.72 
+O2-S-O2      418.40 
+
+#degree of angles
+$Gly
+#degree    theta0(deg)         source
+C-CT-N3      116.46        JPCB111-7078 
+C-CT-H1      108.05        JPCB111-7078 
+N3-CT-H1     108.84        JPCB111-7078 
+H1-CT-H1     106.12        JPCB111-7078 
+CT-C-O2      115.44        JPCB111-7078 
+O2-C-O2      129.11        JPCB111-7078
+CT-N3-H      107.34        AMBER 
+H-N3-H       103.38        JPCB111-7078
+
+$Ala
+CT-CT-C      109.45        JPCB111-7078 
+CT-CT-N3     109.19        JPCB111-7078 
+CT-CT-HC     110.47        JPCB111-7078 
+CT-CT-H1     108.16        JPCB111-7078 
+C-CT-N3      114.22        JPCB111-7078 
+C-CT-H1      107.72        JPCB111-7078 
+N3-CT-H1     107.92        JPCB111-7078 
+HC-CT-HC     108.46        JPCB111-7078 
+CT-C-O2      115.52        JPCB111-7078 
+O2-C-O2      128.94        JPCB111-7078 
+CT-N3-H      107.19        AMBER 
+H-N3-H       103.70        JPCB111-7078 
+
+
+
+
+
+
+
+
+
+
+
+
+CT-CT-CT  171.54  111.88       112.41 112.66   JPCB111-7078 
+CT-CT-C   251.04      109.45 115.01 110.91 112.70 109.87  JPCB111-7078 
+CT-CT-N3  251.04     109.19  107.68 109.40 108.10 JPCB111-7078 
+CT-CT-N3* 292.88     110.94    JPCB111-7078 
+CT-CT-OH  230.12         111.29 JPCB111-7078 
+CT-CT-P   313.80  116.24        JPCB111-7078 
+CT-CT-HC  177.82  109.96   110.47 109.87 109.48 109.57   JPCB111-7078 
+CT-CT-H1  196.65      108.16 109.47 109.43 106.74 109.11  JPCB111-7078 
+CT-CT-HP  129.70  110.07        JPCB111-7078 
+C-CT-N3   376.56    116.46 114.22   112.83 112.79 114.21  JPCB111-7078 
+C-CT-H1   242.67    108.05 107.72   108.39 107.33 108.47  JPCB111-7078 
+C-CT-HC   209.20      107.85     AMBER 
+N3-CT-H1  251.04    108.84 107.92  107.51 107.56 108.46  JPCB111-7078 
+N3*-CT-H1 251.04   110.07    JPCB111-7078 
+P-CT-HP   135.98  106.74        JPCB111-7078 
+HC-CT-HC  160.25  106.47   108.46 105.99 107.64 107.30   JPCB111-7078 
+H1-CT-H1  161.08   106.12  106.71   107.82 JPCB111-7078 
+HP-CT-HP  153.55  107.36        JPCB111-7078 
+CT-C-O2   334.72    115.44 115.52 115.59 115.59 115.67 115.30  JPCB111-7078 
+O2-C-O2   355.64    129.11 128.94 128.82 128.82 128.65 129.38  JPCB111-7078 
+CT-N3-H   209.20    107.34 107.19  107.32 107.17 107.63  AMBER 
+CT-N3*-H  209.20   110.28    JPCB111-7078 
+H-N3-H    209.20    103.38 103.70  104.57 103.93 104.63  JPCB111-7078 
+H-N3*-H   209.20   106.69   JPCB111-7078 
+CT-OH-HO  213.38         105.50 JPCB111-7078 
+CT-P-CT   209.20  109.46        JPCB111-7078 
+
+
+
+CT-CT-CT   171.54  113.39    113.58  114.30  102.61   113.37   JPCB111-7078
+CT-CT-C    251.04  110.95  113.93 110.93 114.38 111.83 113.85 110.83   JPCB111-7078
+CT-CT-C*   251.04   110.87 110.87 113.03      JPCB111-7078
+CT-CT-CA   263.59       115.69    AMBER
+CT-CT-N3   251.04  108.13  109.26 107.75 109.61 104.61 110.71 107.89   JPCB111-7078
+CT-CT-N3*  292.88 111.24        110.11 JPCB111-7078
+CT-CT-S    188.28        110.69 113.20 JPCB111-7078
+CT-CT-HC   177.82  109.08  109.63 109.92 109.42 111.65 107.78 109.03 110.72 JPCB111-7078
+CT-CT-H1   196.65  109.11  108.33 108.17 108.09 110.50 105.53 109.89 109.21 JPCB111-7078
+C-CT-N3    376.56  108.13  111.47 113.48 109.01 113.95 114.71 113.39   JPCB111-7078
+C-CT-H1    242.67  108.31  105.27 108.19 104.90 106.97 104.50 108.17   JPCB111-7078
+C*-CT-HC   209.20   106.42 108.59 107.47      AMBER
+CA-CT-HC   175.73       108.65    JPCB111-7078
+N3-CT-H1   251.04  107.89  110.98 108.17 110.77 110.93 106.67 108.07   JPCB111-7078
+N3*-CT-H1  251.04 109.96        110.28 JPCB111-7078
+S-CT-HC    188.28         106.83 JPCB111-7078
+S-CT-H1    179.91        109.46   JPCB111-7078
+HC-CT-HC   160.25  106.34  107.31 107.73 107.21 107.59 108.05 107.14 108.32 JPCB111-7078
+H1-CT-H1   161.08 106.85       107.42   108.55 107.67 JPCB111-7078
+CT-C-O2    334.72  115.57  115.18 115.41 115.93 115.45 115.57 115.49   JPCB111-7078
+O2-C-O2    355.64  128.84  129.60 129.16 128.11 129.09 128.80 128.99   JPCB111-7078
+
+
+CT-C*-N    292.88     114.20      AMBER
+CT-C*-OH   334.72   113.48 112.97       JPCB111-7078
+CT-C*-O    355.64   125.46 126.81 122.74      JPCB111-7078
+N-C*-O     418.40     123.06      JPCB111-7078
+OH-C*-O    418.40   120.64 120.22       JPCB111-7078
+CT-CA-CA   292.88       121.00    AMBER
+CA-CA-CA   263.59       120.00    AMBER
+CA-CA-HA   158.99       119.80    JPCB111-7078
+C*-N-H     188.28     118.69      JPCB111-7078
+H-N-H      125.52     120.60      JPCB111-7078
+CT-N3-CT   334.72      109.34     JPCB111-7078
+CT-N3-H    209.20  107.29  108.93 107.29 109.36 109.07 107.43 107.30   AMBER
+CT-N3*-H   209.20 110.68   110.14 JPCB111-7078
+H-N3-H     209.20  104.51  107.85 104.45 108.33   103.66 104.41   JPCB111-7078
+H-N3*-H    209.20 107.00        106.65 JPCB111-7078
+C*-OH-HO   255.22   107.23 107.64       JPCB111-7078
+CT-S-CT    230.12        99.72   JPCB111-7078
+CT-S-O2    334.72         104.65 JPCB111-7078
+O2-S-O2    418.40                             113.83 JPCB111-7078
+!
+
+
+DIHEDRALS
+#Dihedral Parameters
+#torsions        gam (deg)   Kphi (kj*mol-1) multi     source
+CT-CT-CT-CT         0         0.753            3       AMBER             
+CT-CT-CT-C*         0         0.653            3       AMBER             
+CT-CT-CT-N3*        0         0.895            3       JPCB111-7078      
+CT-CT-CT-P          0         0.603            3       JPCB111-7078      
+CT-CT-CT-H1         0         0.653            3       AMBER             
+C-CT-CT-CA          0         0.653            3       AMBER             
+C-CT-CT-N3          0         0.653            2       AMBER             
+C-CT-CT-OH          0         0.653            3       AMBER             
+C-CT-CT-H1          0         0.653            3       AMBER             
+C*-CT-CT-HC         0         0.653            3       AMBER             
+CA-CT-CT-N3         0         0.653            3       AMBER             
+N3-CT-CT-OH         0         0.653            3       AMBER             
+N3-CT-CT-H1         0         0.653            3       AMBER             
+OH-CT-CT-HC         0         0.653            3       AMBER             
+S-CT-CT-N3*         0         0.653            3       AMBER             
+S-CT-CT-H1          0         0.653            3       AMBER             
+HC-CT-CT-HC         0         0.628            3       AMBER             
+HC-CT-CT-HP         0         0.628            3       JPCB111-7078      
+CT-CT-C-O2          0         0.000            2       AMBER             
+HC-CT-C-O2          0         0.962            2       JPCB111-7078
+#
+CT-CT-CT-C          0         0.653            3       AMBER              
+CT-CT-CT-N3         0         0.653            3       AMBER              
+CT-CT-CT-S          0         0.653            3       AMBER              
+CT-CT-CT-HC         0         0.669            3       AMBER              
+CT-CT-CT-HP         0         0.669            3       JPCB111-7078       
+C-CT-CT-C*          0         0.653            3       AMBER              
+C-CT-CT-N3*         0         0.653            2       AMBER              
+C-CT-CT-HC          0         0.653            3       AMBER              
+C*-CT-CT-N3         0         0.653            2       AMBER              
+C*-CT-CT-H1         0         0.653            3       AMBER              
+CA-CT-CT-H1         0         0.653            3       AMBER              
+N3-CT-CT-HC        0         0.653            3       AMBER              
+N3*-CT-CT-HC        0         0.895            3       JPCB111-7078       
+OH-CT-CT-H1         0         0.653            3       AMBER              
+S-CT-CT-HC          0         0.653            3       AMBER              
+P-CT-CT-HC          0         0.603            3       JPCB111-7078       
+HC-CT-CT-H1         0         0.653            3       AMBER              
+H1-CT-CT-H1         0         0.653            3       AMBER              
+N3-CT-C-O2          0         0.962            2       JPCB111-7078       
+H1-CT-C-O2          0         0.000            2       JPCB111-7078                                                                   
+CT-CT-C*-N          0         0.293            2       AMBER          
+CT-CT-C*-OH         0         0.837            2       JPCB111-7078   
+HC-CT-C*-O          0         3.347            1       AMBER          
+HC-CT-CA-CA         0        -0.523            2       AMBER          
+CT-CT-N3-CT         0         0.234            3       JPCB111-7078   
+C-CT-N3-CT          0         1.071            3       JPCB111-7078   
+H-CT-N3-C           0         0.418            3       JPCB111-7078   
+H1-CT-N3-H1         0         0.418            3       JPCB111-7078   
+H1-CT-N3*-H        0         0.920            3       JPCB111-7078  
+H1-CT-OH-HO         0         1.255            3       JPCB111-7078 
+CT-CT-S-O2          0        -2.096            3       JPCB111-7078  
+H1-CT-S-CT          0         1.192            3       JPCB111-7078  
+HP-CT-P-CT          0         0.690            3       JPCB111-7078   
+O-C*-N-H          180        10.460            2       AMBER          
+O-C*-OH-HO        180         8.368            2       JPCB111-7078   
+CT-CA-CA-HA       180        15.167            2       AMBER          
+CA-CA-CA-HA       180        15.167            2       AMBER          
+#
+CT-CT-C*-O         0         0.000             2       AMBER           
+HC-CT-C*-N         0         0.000             2       AMBER           
+HC-CT-C*-OH        0         0.837             3       JPCB111-7078    
+CT-CT-CA-CA        0         0.523             2       JPCB111-7078    
+CT-CT-N3-H         0         0.418             3       JPCB111-7078   
+CT-CT-N3*-H        0         0.418             3       JPCB111-7078    
+H1-CT-N3-CT        0         0.234             3       JPCB111-7078   
+CT-CT-N3*-H        0         0.920             3       JPCB111-7078    
+CT-CT-OH-HO        0         5.021             1       JPCB111-7078   
+CT-CT-S-CT         0         0.418             3       JPCB111-7078   
+HC-CT-S-O2         0         2.084             3       JPCB111-7078   
+CT-CT-P-CT         0         0.690             3       JPCB111-7078   
+CT-C*-N-H        180        10.460             2       AMBER           
+CT-C*-OH-HO      180         4.184             2       JPCB111-7078    
+CT-CA-CA-CA      180        15.167             2       AMBER           
+CA-CA-CA-CA      180        15.167             2       AMBER           
+HA-CA-CA-HA      180        15.167             2       AMBER           
+#
+CT-O2-C-O2      180.0       43.932             2       AMBER  
+CT-N-C-O        180.0       43.932             2       AMBER  
+CA-CA-CA-CT     180.0       4.602              2       AMBER  
+C-H-N-H         180.0       4.184              2       AMBER  
+CA-CA-CA-HA     180.0       4.602              2       AMBER  
+#i don't know the source
+H-N3-CT-H1        0         0.418              3       UNKNOWN
+C-CT-N3-H         0         0.418              3       UNKNOWN

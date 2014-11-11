@@ -1,0 +1,118 @@
+# il.ff (kJ/mol, A, deg)
+# Molecular force field for ionic liquids
+# DL_POLY format except dihedral functions that may have 4 cosine terms.
+# A. Padua, J. Canongia Lopes, K. Shimizu, 12-05-2008
+# questions to: agilio.padua@univ-bpclermont.fr
+# latest version donwloadable at: http://therm10.univ-bpclermont.fr/~apadua/
+
+ATOMS
+# i  m/amu    q/e    field  sig    eps
+# dialkylimidazolium JPCB108:2038(2004)
+C1   12.011  -0.17   lj     3.50   0.27614  0.0
+C2   12.011   0.01   lj     3.50   0.27614  0.0
+CE   12.011  -0.05   lj     3.50   0.27614  0.0
+CS   12.011  -0.12   lj     3.50   0.27614  0.0
+CT   12.011  -0.18   lj     3.50   0.27614  0.0
+CR   12.011  -0.11   lj     3.55   0.29288  0.0
+CW   12.011  -0.13   lj     3.55   0.29288  0.0
+HA    1.008   0.21   lj     2.42   0.12552  0.0
+HCR   1.008   0.21   lj     2.42   0.12552  0.0
+HCW   1.008   0.21   lj     2.42   0.12552  0.0
+HC    1.008   0.06   lj     2.50   0.12552  0.0
+H1    1.008   0.13   lj     2.50   0.12552  0.0
+NA   14.007   0.15   lj     3.25   0.71128  0.0
+
+TRANSLATION
+# equivalence between atoms and labels in bonds, angles and dihedrals
+# this is because atoms that have the same role in bonds, angles and
+# dihedrals have many times different electrostatic charges and therefore
+# differrent labels for the purpose of nonbonded interactions
+HA HCW
+HA HCR
+HA HNA
+HA HAP
+HC H1
+HC HOS
+CT C1
+CT C2
+CT CE
+CT CS
+CT CCR
+CT C1P
+CT CTO
+CT C2O
+CT CMO
+CT CEO
+CA CA1
+CA CA2
+CA CA3
+CR CRH
+CR CRM
+CW CWH
+NA NAH
+NA NAM
+NA NAP
+FBT FSI
+
+BONDS
+# i  j    type    re/A    ka/kJmol-1A-2 (negative means a rigid constraint)
+# alkanes OPLS-AA JACS118:11225(1996); JPC100:18010(1996)
+HC   CT   harm    1.090  -2845
+CT   CT   harm    1.529   2242
+# dialkylimidazolium JPCB108:2038(2004)
+CR   HA   harm    1.080  -2845
+CW   HA   harm    1.080  -2845
+CR   NA   harm    1.315   3992
+CW   NA   harm    1.378   3574
+CW   CW   harm    1.341   4352
+NA   CT   harm    1.466   2820
+
+ANGLES
+# i  j    k     type      th/deg   ka/kjmol-1
+# alkanes OPLS-AA JACS118:11225(1996); JPC100:18010(1996)
+CT   CT   CT    harm      112.7    488.3
+CT   CT   HC    harm      110.7    313.8 
+HC   CT   HC    harm      107.8    276.1 
+# dialkylimidazolium JPCB108:2038(2004)
+CW   NA   CR    harm      108.0    585.8
+CW   NA   CT    harm      125.6    585.8
+CR   NA   CT    harm      126.4    585.8
+NA   CR   HA    harm      125.1    292.9
+NA   CR   NA    harm      109.8    585.8
+NA   CW   CW    harm      107.1    585.8
+NA   CW   HA    harm      122.0    292.9
+CW   CW   HA    harm      130.9    292.9
+NA   CT   HC    harm      110.7    313.8
+NA   CT   CT    harm      112.7    488.3
+
+DIHEDRALS
+# i  j    k    l    type     v1         v2          v3          v4
+# alkanes OPLS-AA JACS118:11225(1996); JPC100:18010(1996)
+HC   CT   CT   HC   cos3     0.0000     0.0000      1.3305      0.0000
+CT   CT   CT   HC   cos3     0.0000     0.0000      1.5313      0.0000
+CT   CT   CT   CT   cos3     7.2800    -0.6569      1.1673      0.0000
+# dialkylimidazolium JPCB108:2038(2004)
+CW   NA   CR   NA   cos3     0.0000    19.4600      0.0000      0.0000
+CW   NA   CR   HA   cos3     0.0000    19.4600      0.0000      0.0000
+CT   NA   CR   NA   cos3     0.0000    19.4600      0.0000      0.0000
+CT   NA   CR   HA   cos3     0.0000    19.4600      0.0000      0.0000
+CR   NA   CW   CW   cos3     0.0000    12.5500      0.0000      0.0000
+CR   NA   CW   HA   cos3     0.0000    12.5500      0.0000      0.0000
+CT   NA   CW   CW   cos3     0.0000    12.5500      0.0000      0.0000
+CT   NA   CW   HA   cos3     0.0000    12.5500      0.0000      0.0000
+NA   CW   CW   NA   cos3     0.0000    44.9800      0.0000      0.0000
+NA   CW   CW   HA   cos3     0.0000    44.9800      0.0000      0.0000
+HA   CW   CW   HA   cos3     0.0000    44.9800      0.0000      0.0000
+CW   NA   CT   HC   cos3     0.0000     0.0000      0.5190      0.0000
+CR   NA   CT   HC   cos3     0.0000     0.0000      0.0000      0.0000
+CW   NA   CT   CT   cos3    -7.1535     6.1064      0.7939      0.0000
+CR   NA   CT   CT   cos3    -5.2691     0.0000      0.0000      0.0000
+NA   CT   CT   CT   cos3    -7.4797     3.1642     -1.2026      0.0000
+NA   CT   CT   HC   cos3     0.0000     0.0000      0.3670      0.0000
+
+IMPROPERS
+# improper dialkylimidazolium ring AMBER
+#CR   CW   NA   C1   cos3     0.0000     8.3700      0.0000      0.0000
+#NA   NA   CR   HA   cos3     0.0000     9.2000      0.0000      0.0000
+#NA   CW   CW   HA   cos3     0.0000     9.2000      0.0000      0.0000
+

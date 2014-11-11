@@ -1,0 +1,80 @@
+;FIRST: generate automation
+;SECOND: improper not included default
+;THIRD: no responsibile to the correct of this top file
+;AT LAST: MAYBE IT'S USEFUL
+[ moleculetype ]
+; name  nrexcl
+EMI       3
+
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB
+    1     opls_2001   1    EMI     C1     1      0.91520     12.01100   ; qtot 0.91520
+    2     opls_2002   1    EMI    O21     1     -0.87980     15.99900   ; qtot 0.03540
+    3     opls_2002   1    EMI    O22     1     -0.87980     15.99900   ; qtot -0.84440
+    4     opls_2003   1    EMI    CT1     1      0.32780     12.01100   ; qtot -0.51660
+    5     opls_2004   1    EMI    H11     1     -0.05910      1.00800   ; qtot -0.57570
+    6     opls_2004   1    EMI    H12     1     -0.05910      1.00800   ; qtot -0.63480
+    7     opls_2005   1    EMI    N31     1     -1.09560     14.00700   ; qtot -1.73040
+    8     opls_2006   1    EMI     H1     1      0.36520      1.00800   ; qtot -1.36520
+    9     opls_2006   1    EMI     H2     1      0.36520      1.00800   ; qtot -1.00000
+
+[ bonds ]
+;  ai    aj funct           c0           c1
+   1     2   1       1.237700e-001  3.071060e+005     ; C-O2
+   1     3   1       1.237700e-001  3.071060e+005     ; C-O2
+   1     4   1       1.549900e-001  2.594080e+005     ; C-CT
+   4     5   1       1.086400e-001  3.071060e+005     ; CT-H1
+   4     6   1       1.086400e-001  3.071060e+005     ; CT-H1
+   4     7   1       1.460800e-001  2.652660e+005     ; CT-N3
+   7     8   1       1.003600e-001  3.347200e+005     ; N3-H
+   7     9   1       1.003600e-001  3.347200e+005     ; N3-H
+
+[ pairs ]
+;  ai    aj funct           c0           c1
+   1     8   1                                  ; C--H
+   1     9   1                                  ; C--H
+   2     5   1                                  ; O2--H1
+   2     6   1                                  ; O2--H1
+   2     7   1                                  ; O2--N3
+   3     5   1                                  ; O2--H1
+   3     6   1                                  ; O2--H1
+   3     7   1                                  ; O2--N3
+   5     8   1                                  ; H1--H
+   5     9   1                                  ; H1--H
+   6     8   1                                  ; H1--H
+   6     9   1                                  ; H1--H
+
+[ angles ]
+;  ai    aj    ak funct           c0           c1
+   1     4     5   1       1.080500e+002  -9.255963e+061     ; C-CT-H1
+   1     4     6   1       1.080500e+002  -9.255963e+061     ; C-CT-H1
+   1     4     7   1       1.164600e+002  -9.255963e+061     ; C-CT-N3
+   2     1     3   1       1.291100e+002  -9.255963e+061     ; O2-C-O2
+   2     1     4   1       1.154400e+002  -9.255963e+061     ; O2-C-CT
+   3     1     4   1       1.154400e+002  -9.255963e+061     ; O2-C-CT
+   4     7     8   1       1.073400e+002  -9.255963e+061     ; CT-N3-H
+   4     7     9   1       1.073400e+002  -9.255963e+061     ; CT-N3-H
+   5     4     6   1       1.061200e+002  -9.255963e+061     ; H1-CT-H1
+   5     4     7   1       1.088400e+002  -9.255963e+061     ; H1-CT-N3
+   6     4     7   1       1.088400e+002  -9.255963e+061     ; H1-CT-N3
+   8     7     9   1       1.033800e+002  -9.255963e+061     ; H-N3-H
+
+[ dihedrals ]
+;  ai    aj    ak    al  funct       c0           c1        multi
+   1     4     7     8   1         0.000000    0.418000      3    ; C-CT-N3-H
+   1     4     7     9   1         0.000000    0.418000      3    ; C-CT-N3-H
+   2     1     4     5   1         0.000000    0.000000      2    ; O2-C-CT-H1
+   2     1     4     6   1         0.000000    0.000000      2    ; O2-C-CT-H1
+   2     1     4     7   1         0.000000    0.962000      2    ; O2-C-CT-N3
+   3     1     4     5   1         0.000000    0.000000      2    ; O2-C-CT-H1
+   3     1     4     6   1         0.000000    0.000000      2    ; O2-C-CT-H1
+   3     1     4     7   1         0.000000    0.962000      2    ; O2-C-CT-N3
+   5     4     7     8   1         0.000000    0.418000      3    ; H1-CT-N3-H
+   5     4     7     9   1         0.000000    0.418000      3    ; H1-CT-N3-H
+   6     4     7     8   1         0.000000    0.418000      3    ; H1-CT-N3-H
+   6     4     7     9   1         0.000000    0.418000      3    ; H1-CT-N3-H
+
+; warning也许存在非正常二面角，but我没有生成improper dihedrals, 不想写了，自己加上吧...
+;warning improper dihedrals don't included, I don't want to do that, do it yourself
+;I can't promise this file is correct, thank you.
+;^_^
