@@ -4,7 +4,8 @@
     "qm_method": 11, 
     "n_atom": 6, 
     "i_time": 0, 
-    "n_state": 3
+    "n_state": 3,
+    "spin": 3
   }, 
   "mol": {
     "natom": 6, 

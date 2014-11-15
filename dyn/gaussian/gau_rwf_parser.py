@@ -11,16 +11,16 @@ import tools
 
 
     ### =============== collect QC data for dynamics ===================== ###
-    # ci vector & mo eigen-value/vector
+    # 
     #  ---------------------------------------------------------------------
     #  
-    #  This subrountine is used to read the TDDFT output of QC code
+    #  This subrountine is used to read the DFT output of QC code
     # 
     #  'gaussian.chk & gaussian.log is required.
     #  
     #  Two output files are:
     #      (1) mo.dat      The MO coefficient
-    #      (2) ci.dat       Important CI vector
+    #      
     #----------------------------------------------------------------------------------------- 
 # suppose the rwf file is obtained.
 
@@ -150,15 +150,6 @@ class gau_rwf_parser():
 
         return
         
-# ----------------------------------------------------------------
-# check the required input for this parser.
-    def __check_calc(self):
-        """
-        require the existence of log & chk in the current directory
-        """
-        # nothing done
-        return        
-
 # ----------------------------------------------------------------
 # to generate Record files from Gaussian chk file
     def prepare_chk(self):
@@ -648,37 +639,6 @@ class gau_rwf_parser():
         return
         
               
-    def get_ci_td(self):
-        """ 
-        read ci from rwf 
-        file 635R containing TDDFT vectors X+Y> and X-Y>
-        """        
-        # td excited state energy
-        self.__read_ci_td_energy()
-        self.__wrt_ci_td_energy()
-        # ci coefficient X+Y & X-Y
-        self.__read_ci_635R()
-        self.__distrib_ci_matrix()  
-        self.__wrt_ci_td(filename = "ci_all.dat") 
-        
-        # relation: $ c_{ia} = (\epsilon_a-\epsilon_i)^{-1/2}(X_{ia}+Y_{ia}) $
-
-        self.__do_cis_casida()
-        
-        # normalization and et al.
-        self.__norm_ci_td() 
-        self.__wrt_ci_td(filename = "ci_all_norm.dat") 
-        self.__mip_ci_td()  
-         # per state per spin
-         # in each state, there is X+Y and X-Y
-         # the data in rwf 635 is
-         # state 1:
-         # <\alpha X+Y \beta X+Y>
-         # state 2:
-         # ......  
-         # <\alpha X-Y \beta X-Y>
-        return
-
 
     
 # main program.

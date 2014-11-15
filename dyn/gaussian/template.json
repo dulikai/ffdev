@@ -6,7 +6,7 @@
   }, 
   "title": "[0] [0]", 
   "routine": {
-    "content": "# force td(singlet, root=2, nstates=3) b3lyp/6-31G** scf=(tight,maxcycle=10000) iop(9/40=20) nosymm ", 
+    "content": "# force b3lyp/6-31G** scf=(tight,maxcycle=10000) iop(9/40=20) nosymm ", 
     "model": "b3lyp/6-31G**", 
     "theory": "b3lyp", 
     "basis": "6-31G**"

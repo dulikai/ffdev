@@ -22,14 +22,15 @@ class bPESGrid:
     def angle(self, mol):
         return
         
+        
+    def mapping(self):
+        pass
+        
     def mk_frg(self, mol, sitelist):
         """ a list of mole """
-        newmol = bMole()
-        for i in sitelist:
-            mol.append()
             
         return
-    def mk_grp(self, mol, frglist):
+    def mk_frg(self, mol, frglist):
         """ split the mole in to fragments and group up"""
         
         return

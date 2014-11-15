@@ -1,7 +1,7 @@
 %chk=gaussian.chk
 %mem=1GB
 %nproc=2
-# force td(singlet, root=2, nstates=3) b3lyp/6-31G** scf=(tight,maxcycle=10000) iop(9/40=20) nosymm 
+# force b3lyp/6-31G** scf=(tight,maxcycle=10000) iop(9/40=20) nosymm 
 
 [0] [0]
 
