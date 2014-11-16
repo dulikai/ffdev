@@ -50,6 +50,9 @@ from bConfig import bConfig
 from bConst import bConst
 from fflinear import fflinear
 
+from gaussian.gaussian import Gaussian
+
+
 class bDynamics():
     """
     this model implement a very-very simple md runner
@@ -90,14 +93,9 @@ class bDynamics():
         if (abs(pes_all(old_index_state) - pes_all(new_index_state)) >= hop_energy):
             new_index_state = old_index_state
             index_state = old_index_state
-            
-            
 
+        return
 
-
-
-
-          
     def setup(self):
         """
         initial based on configure

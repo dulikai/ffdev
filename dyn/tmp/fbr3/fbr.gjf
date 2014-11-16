@@ -1,0 +1,12 @@
+%chk=G:\tree\Gitlib\ffdev\dynamics\tmp\fbr3\fbr.chk
+# hf/3-21g geom=connectivity
+
+Title Card Required
+
+0 1
+ Br                -4.95762732   -1.14406778    0.00000000
+ F                 -6.67762732   -1.14406778    0.00000000
+
+ 1 2 1.0
+ 2
+
