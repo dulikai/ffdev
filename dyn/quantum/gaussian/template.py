@@ -1,5 +1,6 @@
-# python
+#! /usr/bin/env python
 
+import os
 import sys
 import re
 import copy
@@ -30,7 +31,7 @@ import tools
 #
 #   template & template_cmp are not necessary in the current version.
 #
-class template():
+class Template():
     """
     process gaussian template & dump
     """
@@ -42,13 +43,13 @@ class template():
                         'tail':'', 'title':'', 'mol': {} }  
         # i/o pointer                      
         self.pointer = {"content": [], "i_line": 0}
-        self.files = {'gaussian': './EXAM/gau_template.gjf', 'template': 'template.json'}
+        self.files = {'gaussian': './GAU_EXAM/gau_template.gjf', 'template': 'template.json'}
         
         if config != {}:
             root_dir = config['root']
             dirs = config['dirs']
             files = config['files']
-            gau_file = root_dir + "/" + dirs['template'] + "/" + files['gau_template']
+            gau_file = root_dir + "/" + dirs['template'] + "/" + files['inp_template']
             tpl_file = root_dir + '/template.json'
             self.files = {'gaussian': gau_file, 'template': tpl_file}          
 
@@ -284,7 +285,7 @@ class template():
                 
 # Main Program    
 if __name__ == "__main__":    
-    gau = template()
+    gau = Template()
 
     
 

@@ -4,8 +4,9 @@ import os
 import subprocess
 import shutil
 
-from SetupEnv import *
-from CreateInp import *
+from Template import *
+from setupEnv import *
+from createInp import *
 from ffRunner import *
 from Parser import *
 
@@ -22,18 +23,23 @@ class goStep():
         return
 
         
+    def templ(self):
+        """ build template for input generator """
+        t = Template(self.config)
+        return
+        
     def setup(self):
         """
         check interface, make directory,
         setup the job exec. environment
         """
-        s = SetupEnv(self.config)
+        s = setupEnv(self.config)
         s.setup()
         return
         
     def create(self):
         """ generate input file """
-        c = CreateInp(self.config)
+        c = createInp(self.config)
         c.modify(jobtype = "dft")
         c.wrt_input()
         return
@@ -60,6 +66,8 @@ class goStep():
         """
         build directory, generate input, exec job, parser info, collect data
         """
+        self.templ()
+        
         self.setup()
         
         self.create()

@@ -19,7 +19,7 @@ import tools
 #
 # note: qm_interface geometry was given in atomic unit by default.
 #
-class CreateInp():
+class createInp():
     """
     generate gaussian input based on gaussian template 
     """
@@ -269,7 +269,7 @@ class CreateInp():
                 
 # Main Program    
 if __name__ == "__main__":      
-    gau = CreateInp()    
+    gau = createInp()    
     gau.modify(jobtype = "td")
     gau.wrt_input()
     

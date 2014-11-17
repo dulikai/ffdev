@@ -50,10 +50,10 @@ from bConfig import bConfig
 from bConst import bConst
 from fflinear import fflinear
 
-from gaussian.gaussian import Gaussian
+from quantum.gaussian import Gaussian
+from quantum import tools
 
-
-class bDynamics():
+class bDynSOC():
     """
     this model implement a very-very simple md runner
     """
@@ -87,7 +87,7 @@ class bDynamics():
         """
         i_state = 1
         for i in xrange(n_state):
-            
+            pass
         
         # Reject all hops when the energy gap is large than hop_e if necessary
         if (abs(pes_all(old_index_state) - pes_all(new_index_state)) >= hop_energy):
@@ -100,12 +100,30 @@ class bDynamics():
         """
         initial based on configure
         """
+        os.chdir("test")
+        print "I am here, ", os.getcwd()
         self.status = bStatus()
         np.random.seed()
         return
-       	   
+
+    def dump(self):
+        sites = self.status.give(keyword="sites")
+        n_site = self.status.give(keyword = "n_site")
+        parm = self.config.give(keyword="quantum")
+        parm['n_atom'] = n_site
+        mol = {}
+        mol['natom'] = n_site
+        atoms = []
+        for mysite in sites:
+            name = mysite.name
+            coord = mysite.pos
+            atoms.append({'name': name, 'coord': coord})
+        mol['atoms'] = atoms
+        tools.load_data("interface.json")
+        return
+            
     def action(self):
-        """ the potential energy """
+        """ the action by potential energy """
         ff = fflinear(self.status)
         ff.eandg()
         # other case, need to map model <--> status
@@ -567,6 +585,8 @@ class bDynamics():
         
         return
 
+     
+        
     def print_status(self, fp):
         print("    INITIAL STATE\n\n")
         self.print_restart(fp)
@@ -604,7 +624,9 @@ class bDynamics():
     
 if __name__ == "__main__":
     config = bConfig()
-    dyn = bDynamics(config)
+    dyn = bDynSOC(config)
+    dyn.setup()
+    dyn.dump()
     dyn.sim()
     
     # dyn.setup()

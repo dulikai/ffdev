@@ -12,11 +12,20 @@ class bConfig():
     ld_gamma = 100          # suppose to be ps^-1
     ld_temperature = 300    # K [default: temperature]
     thermostat_tau = 1.0    # unit
-    
+    #
     max_steps = 1000
     print_steps = 1
     integrator = "NVE"
-    
+    #
+    quantum = {
+                'n_state': 2,
+                'i_state': 2,
+                'n_spin': 2,
+                'i_spin': 3,
+                'qm_method': 'DFT'
+              }
+              
+              
     def __init__(self):
     
         return
@@ -28,6 +37,7 @@ class bConfig():
             print("@error: no such configuration keyword!!!")
             exit(1)
         return value
+        
         
         
 

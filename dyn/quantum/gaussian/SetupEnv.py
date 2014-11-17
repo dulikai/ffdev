@@ -7,7 +7,7 @@ import shutil
 sys.path.append(os.path.split(os.path.realpath(__file__))[0]+"/../tools/")
 import tools
 
-class SetupEnv:
+class setupEnv:
     """ setup calculation environment """
     def __init__(self, config = {}):
         """

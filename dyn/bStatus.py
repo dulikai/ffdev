@@ -20,7 +20,7 @@ class bStatus:
     def __dir__(self):
         return ["sites", "n_site"]
         
-    def __init__(self):
+    def __init__(self, config = {}):
         """ read in restart file """
         self.read_box()
         self.read_coord()

@@ -1,15 +1,16 @@
 #! /usr/bin/python
 
-from gau_template import *
-from gau_create import *
-from gau_parser import *
-from gau_zero import *
-from gau_nonzero import *
-from gau_overlap import *
-from gau_nac import *
+from Template import *
+from createInp import *
+from setupEnv import *
+from ffRunner import *
+from Parser import *
+from goStep import *
+from Gaussian import *
 
-__all__ = ["gau_template", "gau_create", "gau_parser", "gau_zero", "gau_nonzero", "gau_overlap", "gau_nac"]
+__all__ = ["Template", "createInp", "setupEnv", "ffRunner", "Parser", "goStep", "Gaussian"]
 
 
 
-__revision__ = "$Revision: 0 $"
+__revision__ = "$Revision: 0.1 $"
+
