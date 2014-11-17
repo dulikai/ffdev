@@ -339,7 +339,6 @@ class xyzPoint:
             
 class xyzSingle:
     """ a single xyz geom. """
-    
     def __init__(self):
         self.sites = []
         self.n_site = 0

@@ -4,7 +4,7 @@ import sys
 import re
 import copy
 
-sys.path.append("../tools/")
+sys.path.append(os.path.split(os.path.realpath(__file__))[0]+"/../tools/")
 import tools
 
 # gaussian input process for templating.
@@ -30,9 +30,9 @@ import tools
 #
 #   template & template_cmp are not necessary in the current version.
 #
-class gau_template():
+class template():
     """
-    process gaussian template & generate gaussian input
+    process gaussian template & dump
     """
     def __init__(self, config = {}):
         """ initialize several internal variable """
@@ -284,7 +284,7 @@ class gau_template():
                 
 # Main Program    
 if __name__ == "__main__":    
-    gau = gau_template()
+    gau = template()
 
     
 

@@ -4,7 +4,9 @@ import re
 import copy
 import os
 import shutil
-sys.path.append("../tools/")
+from CONSTANT import *
+
+sys.path.append(os.path.split(os.path.realpath(__file__))[0]+"/../tools/")
 import tools
 
 # gaussian input process.
@@ -17,9 +19,9 @@ import tools
 #
 # note: qm_interface geometry was given in atomic unit by default.
 #
-class gau_create():
+class CreateInp():
     """
-    process gaussian template & generate gaussian input
+    generate gaussian input based on gaussian template 
     """
     def __init__(self, config = {}):
         """ initialize several internal variable """
@@ -57,24 +59,20 @@ class gau_create():
         return
             
     def load(self):
-        """
-        load template.json
-        """
+        """ load template.json """
         filename = self.files['template']
         obj = tools.load_data(filename)
         self.template = copy.deepcopy(obj)
-        self.template_cmp = copy.deepcopy(obj)
-        
+        self.template_cmp = copy.deepcopy(obj)        
         return obj
 
-
-      
-    def wrt_gau_input(self, flag="default"):
+    def wrt_input(self, flag="default"):
         """ 
-        wrt template file 
-        cmp for template_cmp
+        flag:
+        default, write modified template file, or
+        cmp, write template compare file
         """
-        bohr2ang = 0.529177
+        bohr2ang = AU2ANGSTROM
         print "QM-INTERFACE GIVEN IN ATOMIC UNIT, CONVERSION TO ANGSTROM IN GAUSSIAN DONE"
         if flag == "cmp":
             t = self.template_cmp
@@ -86,8 +84,7 @@ class gau_create():
             
         # open file
         jobfile = self.files['gaussian']
-        fp = open(jobfile, 'w')
- 
+        fp = open(jobfile, 'w') 
         # write link0
         link0 = t['link0']
         print >>fp, "%%chk=%s" % link0['chk'] 
@@ -144,7 +141,6 @@ class gau_create():
             # write routine
             print >>fp, "%s\n" % es_content
         print "gau_write:", os.getcwd(), jobfile
-
 
         return
 
@@ -213,6 +209,8 @@ class gau_create():
         t = copy.deepcopy(self.template_cmp)
         
         # %charge & spin was kept. none was requred.
+        t['spin'] = i_cur['parm']['spin']
+
         # %molecular spec.     
         t['mol'] = i_cur['mol']        
         # %routine
@@ -254,7 +252,8 @@ class gau_create():
         self.template = t
         
         return
-
+        
+        
     def modify(self, jobtype = "td"):
         """
         optional input: td / dimer
@@ -269,13 +268,10 @@ class gau_create():
         return
                 
 # Main Program    
-if __name__ == "__main__":
-      
-    gau = gau_create()    
-    # gau.modify(jobtype = "dimer")    
-    # gau.wrt_gau_input()    
+if __name__ == "__main__":      
+    gau = CreateInp()    
     gau.modify(jobtype = "td")
-    gau.wrt_gau_input()
+    gau.wrt_input()
     
     
     

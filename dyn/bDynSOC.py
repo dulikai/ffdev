@@ -50,6 +50,9 @@ from bConfig import bConfig
 from bConst import bConst
 from fflinear import fflinear
 
+from gaussian.gaussian import Gaussian
+
+
 class bDynamics():
     """
     this model implement a very-very simple md runner
@@ -78,20 +81,21 @@ class bDynamics():
         prob = 1.0 - np.exp(-np.pi / 4.0 * xi)
         return prob
         
-    def hopping(self, xx):
+    def hopping(self, pes, grad, Hso):
+        """
+        calc. hopping prob.
+        """
+        i_state = 1
+        for i in xrange(n_state):
+            
         
         # Reject all hops when the energy gap is large than hop_e if necessary
         if (abs(pes_all(old_index_state) - pes_all(new_index_state)) >= hop_energy):
             new_index_state = old_index_state
             index_state = old_index_state
-            
-            
 
+        return
 
-
-
-
-          
     def setup(self):
         """
         initial based on configure
