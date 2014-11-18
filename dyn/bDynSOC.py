@@ -48,7 +48,7 @@ import copy
 from bStatus import bStatus
 from bConfig import bConfig
 from bConst import bConst
-from fflinear import fflinear
+from ffTest import ffTest
 
 from quantum.gaussian import Gaussian
 from quantum import tools
@@ -116,24 +116,33 @@ class bDynSOC():
         atoms = []
         for mysite in sites:
             name = mysite.name
-            coord = mysite.pos
+            coord = list(mysite.pos)
             atoms.append({'name': name, 'coord': coord})
         mol['atoms'] = atoms
-        tools.load_data("interface.json")
+        obj = {'parm': parm, 'mol': mol}
+        tools.dump_data("interface.json", obj)
+        print "DUMP INTERFACE FILE"
         return
             
-    def action(self):
-        """ the action by potential energy """
-        ff = fflinear(self.status)
-        ff.eandg()
+    def aux_action(self):
+        """
+        based on force, update acc. et al.
+        """
         # other case, need to map model <--> status
         sites = self.status.give(keyword="sites")
         # self.status.potential_energy = 1.0  # set as default...
         for mysite in sites:
             # mysite.force = np.random.normal(0.0, 1.0, 3)
-            # mysite.torque = np.random.normal(0.0, 1.0, 3)
             mysite.acc = mysite.force / mysite.mass
-            mysite.angacc = mysite.torque / mysite.inertia
+        return
+        
+    def action(self):
+        """ the action by potential energy """
+        # dump interface file...
+        self.dump()
+        # call the energy & gradient worker
+        ff = ffTest(self.status)
+        ff.eandg()
         return
 
     def velocitize(self):
@@ -627,7 +636,9 @@ if __name__ == "__main__":
     dyn = bDynSOC(config)
     dyn.setup()
     dyn.dump()
-    dyn.sim()
+    
+    
+    # dyn.sim()
     
     # dyn.setup()
     # dyn.velocitize()

@@ -115,6 +115,8 @@ def load_data(filename):
         obj = load_json(filename)
     else:
         print "CANNOT FIND file: %s" % filename
+        print os.path.split(os.path.realpath(__file__))
+
         sys.exit(1)
     
     return obj
