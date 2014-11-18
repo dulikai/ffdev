@@ -143,6 +143,8 @@ class bDynSOC():
         # call the energy & gradient worker
         ff = ffTest(self.status)
         ff.eandg()
+        # update some aux. data
+        self.aux_action()
         return
 
     def velocitize(self):
@@ -160,14 +162,9 @@ class bDynSOC():
         ke = 0.5 * Boltzmann * temperature #* n_freedom / (6.0 * n_site)
         for mysite in sites:
             mass = mysite.mass       
-            inertia = mysite.inertia  
             # 1/2 m v^2 = 1/2 k_B T = k_e
             vel = np.sqrt(2.0 * ke / mass)
-            angvel = np.sqrt(2.0 * ke / inertia)
-            # angmom = np.sqrt(2.0 * ke * inertia)
             mysite.vel = vel * np.random.normal(0.0, 1.0, 3)
-            mysite.angvel = angvel * np.random.normal(0.0, 1.0, 3)
-            mysite.angmom = inertia * mysite.angvel
         return
         
     def get_kinetic_energy(self):
@@ -591,7 +588,6 @@ class bDynSOC():
         print "RESTART DATA DUMP"
         sites = self.status.dump(fp)  
         
-        
         return
 
      
@@ -634,11 +630,11 @@ class bDynSOC():
 if __name__ == "__main__":
     config = bConfig()
     dyn = bDynSOC(config)
-    dyn.setup()
-    dyn.dump()
+    # dyn.setup()
+    # dyn.dump()
+    # dyn.action()
     
-    
-    # dyn.sim()
+    dyn.sim()
     
     # dyn.setup()
     # dyn.velocitize()

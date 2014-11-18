@@ -30,11 +30,45 @@ class ffTest:
     """
     def __init__(self, status):
         self.status = status
-        self.params = {'sigma': 2.345, 'epsilon': 1.661,
-                       }
+        self.params = {'sigma1': 2.345, 'epsilon1': 1.661,
+                       'sigma2': 3.500, 'epsilon2': 2.500}
         return
 
+    # v11 = 0.5 * k_11 * (r - r_11)
+    # v22 = 0.5 * k_22 * (r - r_22)
+    # v12 = v21 = 1.0
+    def hamiltonian(self):
+        """ two state model """
+        r_11 = self.params['sigma1']
+        k_11 = self.params['epsilon1']
+        r_22 = self.params['sigma2']
+        k_22 = self.params['epsilon2']
+        # v_11
+        s = r - r_11
+        v_11 = 0.5 * k_11 * s * s
+        # v_22 
+        s = r - r_22
+        v_22 = 0.5 * k_22 * s * s
+        # v_12, v_21
+        v_12 = 1.0
+        v_21 = v_12
+        #
+        H = np.zeros((2,2))
+        H[0][0] = v_11; H[0][1] = v_12
+        H[1][0] = v_21; H[1][1] = v_22
         
+        return H
+        
+    def gradient(self):
+        """
+        V' = epsilon * (r - sigma)
+        """
+        sigma = self.params['sigma']
+        epsilon = self.params['epsilon']
+        s = r - sigma
+        g = epsilon * (r - sigma)
+        return g
+    
     def energy(self, r):
         """
         V = 0.5 * epsilon * (r-sigma)^2
