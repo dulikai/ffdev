@@ -22,7 +22,7 @@ import math
 from bStatus import bStatus
 
 
-class ffTest:
+class ffTwoState:
     """
     a very simple case of particle interaction
     in which,
@@ -30,76 +30,49 @@ class ffTest:
     """
     def __init__(self, status):
         self.status = status
-        self.params = {'sigma1': 2.345, 'epsilon1': 1.661,
-                       'sigma2': 3.500, 'epsilon2': 2.500}
+        # sigma epsilon pairs
+        self.params = [{'sigma': 2.345, 'epsilon': 1.661}, # spin 1
+                       {'sigma': 3.500, 'epsilon': 2.500}]  # spin 2
         return
 
-    # v11 = 0.5 * k_11 * (r - r_11)
-    # v22 = 0.5 * k_22 * (r - r_22)
-    # v12 = v21 = 1.0
-    def hamiltonian(self):
-        """ two state model """
-        r_11 = self.params['sigma1']
-        k_11 = self.params['epsilon1']
-        r_22 = self.params['sigma2']
-        k_22 = self.params['epsilon2']
-        # v_11
-        s = r - r_11
-        v_11 = 0.5 * k_11 * s * s
-        # v_22 
-        s = r - r_22
-        v_22 = 0.5 * k_22 * s * s
-        # v_12, v_21
-        v_12 = 1.0
-        v_21 = v_12
-        #
-        H = np.zeros((2,2))
-        H[0][0] = v_11; H[0][1] = v_12
-        H[1][0] = v_21; H[1][1] = v_22
         
-        return H
-        
-    def gradient(self):
-        """
-        V' = epsilon * (r - sigma)
-        """
-        sigma = self.params['sigma']
-        epsilon = self.params['epsilon']
-        s = r - sigma
-        g = epsilon * (r - sigma)
-        return g
-    
-    def energy(self, r):
+    def energy(self, r, sigma, epsilon):
         """
         V = 0.5 * epsilon * (r-sigma)^2
         """
-        sigma = self.params['sigma']
-        epsilon = self.params['epsilon']
         s = r - sigma
         pot = 0.5 * epsilon * s * s
         return pot
         
-    def gradient(self, r):
+    def gradient(self, r, sigma, epsilon):
         """
         V' = epsilon * (r - sigma)
         """
-        sigma = self.params['sigma']
-        epsilon = self.params['epsilon']
         s = r - sigma
         g = epsilon * (r - sigma)
         return g
 	
-    def eandg(self):
+    def eandg(self, i_spin = 1):
         """
         Write a function that computes the Lennard-Jones potential
         V = 0.5 * epsilon * (r-sigma)^2
         dist = self.get_dist_mat()
         """
         self.status.zeros()  
+        # parameters
+        if i_spin == 1:
+            par = self.params[0]
+        elif i_spin == 3:
+            par = self.params[1]
+        else:
+            print "no such spin condition!!!"
+            exit(1)
         # calc.
         n_site = self.status.give(keyword="n_site")
         sites = self.status.give(keyword="sites")
         # print dist
+        # sigma epsilon pair
+        sigma = par['sigma']; epsilon = par['epsilon'];
         for i in xrange(n_site):
             # force act on site i. f_r dr_i
             for j in xrange(i+1, n_site):
@@ -108,14 +81,78 @@ class ffTest:
                 r = np.linalg.norm(rij)
                 drdi = - rij / r
                 drdj = - drdi
-                self.status.potential_energy += self.energy(r)    
-                ibody.force += - self.gradient(r) * drdi
-                jbody.force += - self.gradient(r) * drdj
+                self.status.potential_energy += self.energy(r, sigma, epsilon)    
+                ibody.force += - self.gradient(r, sigma, epsilon) * drdi
+                jbody.force += - self.gradient(r, sigma, epsilon) * drdj
         for ibody in sites:
             print "na force", ibody.force
         return
         
+    def gdiff(self):
+        """ gradient difference of two state """
+        self.status.zeros()  
+        # calc.
+        n_site = self.status.give(keyword="n_site")
+        sites = self.status.give(keyword="sites")
+        # print dist
+        # sigma epsilon pair
+        #
+        g = [np.zeros(3) for i in xrange(n_site)]
+        for i in xrange(n_site):
+            # force act on site i. f_r dr_i
+            for j in xrange(i+1, n_site):
+                ibody = sites[i]; jbody = sites[j]
+                rij = jbody.pos -ibody.pos
+                r = np.linalg.norm(rij)
+                drdi = - rij / r
+                drdj = - drdi
+                # spin 1
+                par = self.params[0]
+                sigma = par['sigma']; epsilon = par['epsilon'];
+                t = self.gradient(r, sigma, epsilon) * drdi
+                g[i] += t; g[j] += -t;
+                # spin 3
+                par = self.params[1]
+                sigma = par['sigma']; epsilon = par['epsilon'];
+                t = - self.gradient(r, sigma, epsilon) * drdi
+                g[i] -= t; g[j] -= -t;
+        self.status.have(keyword="gdiff", value=g)        
+        for v in g:
+            print "gdiff", v
+        return g
         
+    def prob_isc(self, Hso):
+        """
+        Landau Zener model, ST model
+        """
+        # gradient
+        gdiff = self.status.give(keyword="gdiff")
+        # velocity
+        n_site = self.status.give(keyword="n_site")
+        sites = self.status.give(keyword="sites")
+        vel = [np.zeros(3) for i in xrange(n_site)]
+        for i in xrange(n_site):
+            vel[i] = sites[i].vel
+        # calc. prob. 
+        t = 0.0
+        for i in xrange(n_site):
+            t += np.dot(gdiff[i], vel[i])
+            
+        if abs(t) < 1.0e-10:
+            prob = 0.0
+        else:    
+            xi = 8.0 * Hso * Hso / t
+            prob = 1.0 - np.exp(-np.pi / 4.0 * xi)
+        print "probility, ", prob    
+        return prob
+        
+    def hopping(self, prob):
+        ran = np.random.rand()
+        i_spin = 1
+        if prob > ran:
+            i_spin = 3
+        print "i_spin, ", i_spin, ran, prob  
+        return i_spin
         
     def get_dist_mat(self):
         """
@@ -175,11 +212,12 @@ class ffTest:
 if __name__ == "__main__":
     os.chdir("test")
     status = bStatus()
-    ff = ffTest(status)
+    status.velocitize(temperature=300)
+    ff = ffTwoState(status)
     ff.eandg()
-    ff.eandg_nd()
-        
-        
+    g = ff.gdiff()
+    prob = ff.prob_isc(0.4)
+    ff.hopping(prob)    
         
         
         
