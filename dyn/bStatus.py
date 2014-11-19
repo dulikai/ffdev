@@ -3,6 +3,7 @@
 import os
 import numpy as np
 
+from bConst import bConst
 #
 # site layer page node cluster group 
 #
@@ -154,6 +155,31 @@ class bStatus:
         sites = self.sites
         for mysite in sites:
             print mysite.pos, mysite.angpos
+        return
+        
+        
+    def velocitize(self, temperature=300):
+        """
+        init vel. et al.
+        """
+        np.random.seed()
+        Boltzmann = bConst.k_B
+        n_site = self.n_site #status.give(keyword = "n_site")
+        sites = self.sites #status.give(keyword="sites")
+        # Boltzmann distribution:
+        # every freedom has 1/2 k_B T = 1/2 m <v^2> kinetic energy
+        ke = 0.5 * Boltzmann * temperature #* n_freedom / (6.0 * n_site)
+        for mysite in sites:
+            mass = mysite.mass       
+            # 1/2 m v^2 = 1/2 k_B T = k_e
+            vel = np.sqrt(2.0 * ke / mass)
+            mysite.vel = vel * np.random.normal(0.0, 1.0, 3)
+        return
+                
+        
+        
+        
+        
         
 class bSite:
     """
