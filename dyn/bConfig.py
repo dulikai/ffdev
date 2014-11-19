@@ -13,7 +13,7 @@ class bConfig():
     ld_temperature = 300    # K [default: temperature]
     thermostat_tau = 1.0    # unit
     #
-    max_steps = 1000
+    max_steps = 2000
     print_steps = 1
     integrator = "NVE"
     #

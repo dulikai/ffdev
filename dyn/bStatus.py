@@ -29,11 +29,11 @@ class bStatus:
         return
         
     def give(self, keyword=""):
+        value = None
         try:
             value = getattr(self, keyword)
         except AttributeError:
-            print("@error: no such model keyword (bStatus)!!!")
-            exit(1)
+            print("@error: no such model keyword (bStatus) : %s" % keyword)
         return value
         
     def have(self, keyword="", value=""):

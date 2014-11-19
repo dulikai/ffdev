@@ -48,6 +48,8 @@ import copy
 from bStatus import bStatus
 from bConfig import bConfig
 from bConst import bConst
+from ffTwoState import ffTwoState
+
 from ffTest import ffTest
 
 from quantum.gaussian import Gaussian
@@ -72,35 +74,11 @@ class bDynSOC():
         # self.model = model      # dynamic variable & ff parameters
         return
 
-    def prob_isc(self, Hso, gdiff, vel):
-        """
-        Landau Zener model 
-        """
-        t = np.dot(gdiff, vel)
-        xi = 8.0 * Hso * Hso / t
-        prob = 1.0 - np.exp(-np.pi / 4.0 * xi)
-        return prob
-        
-    def hopping(self, pes, grad, Hso):
-        """
-        calc. hopping prob.
-        """
-        i_state = 1
-        for i in xrange(n_state):
-            pass
-        
-        # Reject all hops when the energy gap is large than hop_e if necessary
-        if (abs(pes_all(old_index_state) - pes_all(new_index_state)) >= hop_energy):
-            new_index_state = old_index_state
-            index_state = old_index_state
-
-        return
 
     def setup(self):
         """
         initial based on configure
         """
-        os.chdir("test")
         print "I am here, ", os.getcwd()
         self.status = bStatus()
         np.random.seed()
@@ -141,8 +119,11 @@ class bDynSOC():
         # dump interface file...
         self.dump()
         # call the energy & gradient worker
-        ff = ffTest(self.status)
+        ff = ffTwoState(self.status)
         ff.eandg()
+        ff.hopping()
+        # ff = ffTest(self.status)
+        # ff.eandg()
         # update some aux. data
         self.aux_action()
         return
@@ -628,6 +609,8 @@ class bDynSOC():
     
     
 if __name__ == "__main__":
+    os.chdir("test")
+
     config = bConfig()
     dyn = bDynSOC(config)
     # dyn.setup()
