@@ -18,7 +18,7 @@ class QuantumInt:
         self.vars = {
             "n_elec": 100,
             "n_state": 2,
-            "dtime": 1.0,
+            "dtime": 0.01,
             "h_old": h_old,
             "h_new": h_new,
             "h_ref": h_ref,
@@ -195,9 +195,9 @@ class QuantumInt:
         n_elec = self.vars['n_elec']
         n_state = self.vars['n_state']
         dtime = self.vars['dtime']
-        delta = dtime / n_elec
+        delta = dtime / float(n_elec)
         for i_elec in xrange(n_elec):
-            ratio = float(i_elec) /float(n_elec)
+            ratio = float(i_elec) / float(n_elec)
             h_eff = self.build_hamilton_eff(ratio)
             w, v = np.linalg.eigh(h_eff)
             vh = np.transpose(v).conj()
@@ -235,9 +235,9 @@ class QuantumInt:
         """
         dtime = self.vars['dtime']
         n_state = self.vars['n_state']
-        ratio = elec_time / dtime
+        ratio = elec_time / float(dtime)
         h_eff = self.build_hamilton_eff(ratio)
-        drho = -1.0j * (np.dot(h_eff, rho) - np.dot(rho, h_eff))
+        drho = -1.0  * (np.dot(h_eff, rho) - np.dot(rho, h_eff))
         
         # drho = np.zeros((2,2))
         # for k in xrange(n_state):
@@ -247,7 +247,7 @@ class QuantumInt:
                     # a = a + (h_eff[j][l]*rho[k][j] - h_eff[k][j]*rho[j][l])
                 # drho[k][l] = - a * 1.0j    
         # print drho
-        return np.transpose(drho).conj()
+        return drho #np.transpose(drho).conj()
         
 
         
@@ -260,13 +260,11 @@ class QuantumInt:
         rho = self.vars['rho']
         
         n_elec = self.vars['n_elec']
-        n_elec = 100
         n_state = self.vars['n_state']
         dtime = self.vars['dtime']
-        h = dtime / n_elec
+        h = dtime / float(n_elec)
         x0 = 0.0
         y0 = copy.deepcopy(rho)
-        print rho
         for i_elec in xrange(n_elec):
             k1 = self.get_drho(x0, y0)
             k2 = self.get_drho(x0+h/2, y0+k1*h/2)
@@ -276,8 +274,8 @@ class QuantumInt:
             # print "%12.6f%12.6f" % (k1, k2),
             # print "%12.6f%12.6f\n" % (k3, k4)
             # y0 += h*(k1)
-            y0 += h*(k1+2*k2+2*k3+k4)/6
-            x0 += h
+            y0 = y0 + h*(k1+2*k2+2*k3+k4)/6
+            x0 = x0 + h
             print y0[0][0].real, y0[1][1].real
         
 
@@ -294,10 +292,9 @@ class QuantumInt:
         c' = -i A c
         """
         dtime = self.vars['dtime']
-        ratio = elec_time / dtime
-        ratio = 0.0
+        ratio = elec_time / float(dtime)
         h_eff = self.build_hamilton_eff(ratio)
-        dc = -1.0j * np.dot(h_eff, c)
+        dc = 1.0 * np.dot(h_eff, c)
         return dc
         
     def rkf_amp(self):
@@ -310,7 +307,7 @@ class QuantumInt:
         # n_elec = 1000
         n_state = self.vars['n_state']
         dtime = self.vars['dtime']
-        h = dtime / n_elec
+        h = dtime / float(n_elec)
         x0 = 0.0
         y0 = np.array([1.0, 0.0])
         for i_elec in xrange(n_elec):
@@ -322,8 +319,8 @@ class QuantumInt:
             # print "%12.6f%12.6f" % (x0, y0),
             # print "%12.6f%12.6f" % (k1, k2),
             # print "%12.6f%12.6f\n" % (k3, k4)
-            y0 += h*(k1+2*k2+2*k3+k4)/6
-            x0 += h
+            y0 = y0 + h*(k1+2*k2+2*k3+k4)/6
+            x0 = x0 + h
             print y0[0].real, y0[1].real
         rho = np.outer(y0, np.transpose(y0).conj())
             #
@@ -342,8 +339,8 @@ if __name__ == "__main__":
     # q.rkf2()
     # q.rkf3()
     # q.rkf4()
-    # q.unitary_propagator()
-    q.rkf_amp()
+    q.unitary_propagator()
+    # q.rkf_amp()
     # q.rkf_propagator()
     
     
