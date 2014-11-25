@@ -16,6 +16,7 @@ class bPESGrid:
     polygon = {}
     
     def radical(self, tbl={"start": 0.0, "end": 1.0, "size": 0.1}):
+        
         pass
         
         
