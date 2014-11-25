@@ -12,12 +12,68 @@ from xyzModel import xyzSingle, xyzModel
 # the molecule is seperated into different fragment.
 
 class bPESGrid:
-    status = bStatus()
-    polygon = {}
+    # status = bStatus()
+    topology = {}
     
-    def radical(self, tbl={"start": 0.0, "end": 1.0, "size": 0.1}):
+    def get_coord(self, idx):
+        """
+        idx is a list of atoms, return the geom. center
+        """
+        n = len(idx)
+        if n == 0:
+            print "empty atom list, error.."
+            exit(1)
+            
+    def radical(self, xyz, tbl={} ):
+        """
+        group/fragment 2 is the moving group by default
+        """
+        # suppose the xyz geom is given..
         
-        pass
+        frg = [[0,1,2,3], [4]]
+        ndx = [[0], [4]]
+        
+        tbl = {"start": 3.0, "end": 10.0, "size": 0.1}
+        # build ndx center for radical moving..
+        cA = xyz.get_center(ndx[0])
+        cB = xyz.get_center(ndx[1])
+        
+        # mapping   
+        # place frag 1 at the origin.
+        coordA = np.zeros(3)
+        # then we can build a series of A, B pairs,
+        # for which, the radical scan is done..
+        #
+        start = tbl['start']
+        end = tbl['end']
+        size = tbl['size']
+        n_points = int((end-start)/size)
+        pairs = []
+        for i in xrange(n_points):
+            rad = start + size * i
+            coordB = np.array([-rad, 0.0, 0.0])
+            pairs.append([coordA, coordB])
+            
+        # build transformation matrix
+        mat = []
+        for i in xrange(n_points):
+            coordA = pairs[i][0]
+            coordB = pairs[i][1]
+            vec = coordA - cA
+            mA = bRotation.get_trans_mat4(vec)
+            vec =  coordB - cB
+            mB = bRotation.get_trans_mat4(vec)
+            mat.append([mA, mB])
+            
+        # do the transformation
+        model = xyzModel()
+        for m in mat:
+            t = copy.deepcopy(xyz)
+            t.transform(m[0], frg[0])
+            t.transform(m[1], frg[1])
+            model.extend(t)
+        model.dump()    
+        return model
         
         
     def angle(self, mol):
@@ -35,18 +91,7 @@ class bPESGrid:
         """ split the mole in to fragments and group up"""
         
         return
-    def radical(self, frglist, center, rad = 3.0):
-        """ rad ... """
-        frg1 = frglist[0]
-        frg2 = frglist[1]
-        
-        id1 = center[0]
-        id2 = center[1]
-        
-        # compute the directional vector that is id 1-->2
-        # fix 1.
-        
-        return
+
     def regular_polygon(self, n=3, rad=3.0, theta=0.0, theta0=0.0, mode="circle"):
         """ build regular polygonal distribution """
         if n < 3:
@@ -206,8 +251,11 @@ class bPESGrid:
 #        
 if __name__ == "__main__":
     # template
-    # xyz = xyzSingle()
-    # xyz.read()
+    os.chdir("tmp")
+    xyz = xyzSingle()
+    xyz.read(filename="ch3br.xyz")
+    pes = bPESGrid()
+    pes.radical(xyz )
     # origin, vec = xyz.set_info(origin=0, direction=1)
     # polygon = bPolygon()
     # polygon.regular_polygon(n=5, rad=8.0, theta=3.0, theta0=0.0)
@@ -217,22 +265,22 @@ if __name__ == "__main__":
     
     # polygon.print_polygon()
 
-    line = input("enter working directory: \n > ")
-    os.chdir(line)
+    # line = input("enter working directory: \n > ")
+    # os.chdir(line)
 
-    xyzfile = input("xyz file name: \n > ")
+    # xyzfile = input("xyz file name: \n > ")
     
-    core, direction = input("enter X A number id: \n > ")
+    # core, direction = input("enter X A number id: \n > ")
 
     
-    config = {}
-    config['radii'] = {'min': 3, 'max': 6, 'size': 0.1}
-    config['theta'] = {'min': -90, 'max': 90, 'size': 5}
-    config['polygon'] = {'n_sides': 3, 'theta0': 8, 'mode': 'polygon'}
-    config['mole'] = {'core': core, 'direction': direction}
-    config['file'] = {'xyz': xyzfile}
-    polygon = bPolygon()
-    polygon.build(config)
+    # config = {}
+    # config['radii'] = {'min': 3, 'max': 6, 'size': 0.1}
+    # config['theta'] = {'min': -90, 'max': 90, 'size': 5}
+    # config['polygon'] = {'n_sides': 3, 'theta0': 8, 'mode': 'polygon'}
+    # config['mole'] = {'core': core, 'direction': direction}
+    # config['file'] = {'xyz': xyzfile}
+    # polygon = bPolygon()
+    # polygon.build(config)
     
     
     
