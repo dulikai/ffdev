@@ -80,53 +80,65 @@ class bPESGrid:
         
         
     def angle(self, mol):
-
+        """
+        frag 1 is fixed by default..
+        """
          # suppose the xyz geom is given..
         
-        frg = [[0,1,2,3], [4]]
-        ndx = [[1], [0], [4]]        
-        tbl = {"start": 3.0, "end": 10.0, "size": 0.1}
+        frg = [[0,1,2,3,4], [5,6,7,8,9]]
+        ndx = [[0], [4], [9]]        
+        tbl = {"start": 90.0, "end": 270.0, "size": 1.0}
         
-        # build ndx center for radical moving..
+        # build ndx center for angle moving..
         cA = xyz.get_center(ndx[0])
         cB = xyz.get_center(ndx[1])
-        
+        cC = xyz.get_center(ndx[2])
+        print cA, cB, cC
         # mapping   
-        # setup directional vector..
-        direction = cB - cA
-        udir = direction / np.linalg.norm(direction)
+        # setup 
+        plane = bRotation.make_plane(cA, cB, cC)
+        axis = plane[0:3]
         # place frg 1 fixed.
         coordA = cA
+        coordB = cB
         # then we can build a series of A, B pairs,
         # for which, the radical scan is done..
         #
-        start = tbl['start']
-        end = tbl['end']
-        size = tbl['size']
+        start = tbl['start'] / 180.0 * np.pi
+        end = tbl['end'] / 180.0 * np.pi
+        size = tbl['size'] / 180.0 * np.pi
         n_points = int((end-start)/size)
         pairs = []
         for i in xrange(n_points):
-            rad = start + size * i
-            coordB = cA + udir * rad
-            pairs.append([coordA, coordB])
+            theta = start + size * i
+            xA = np.array([-np.linalg.norm(cA-cB), 0.0, 0.0])
+            xB = np.zeros(3)
+            r0 = np.linalg.norm(cB-cC)
+            x = r0*np.cos(np.pi-theta)
+            y = r0*np.sin(np.pi-theta)
+            xC = np.array([x, y, 0.0])
             
+            bRotation.get_mat4t(v1, v2, t1, t2)
+            pairs.append([xA, xB, xC])
+            print xB, xC
+        # exit()    
         # build transformation matrix
         mat = []
         for i in xrange(n_points):
             coordA = pairs[i][0]
             coordB = pairs[i][1]
-            vec = coordA - cA
-            mA = bRotation.get_trans_mat4(vec)
-            vec =  coordB - cB
-            mB = bRotation.get_trans_mat4(vec)
-            mat.append([mA, mB])
+            coordC = pairs[i][2]
+            # A-B --- C , A-B --- C'
+            v1 = coordC - coordB
+            v2 = cC - coordB
+            m = bRotation.get_rot_mat4v(v1, v2)
+            mat.append(m)
             
         # do the transformation
         model = xyzModel()
         for m in mat:
             t = copy.deepcopy(xyz)
-            t.transform(m[0], frg[0])
-            t.transform(m[1], frg[1])
+            t.transform(m, frg[1])
             model.extend(t)
         model.dump()    
         return model
@@ -305,9 +317,10 @@ if __name__ == "__main__":
     # template
     os.chdir("tmp")
     xyz = xyzSingle()
-    xyz.read(filename="ch3br.xyz")
+    xyz.read(filename="10.xyz")
     pes = bPESGrid()
-    pes.radical(xyz )
+    # pes.radical(xyz)
+    pes.angle(xyz)
     # origin, vec = xyz.set_info(origin=0, direction=1)
     # polygon = bPolygon()
     # polygon.regular_polygon(n=5, rad=8.0, theta=3.0, theta0=0.0)
