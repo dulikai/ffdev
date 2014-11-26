@@ -117,9 +117,12 @@ class bPESGrid:
             x = r0*np.cos(np.pi-theta)
             y = r0*np.sin(np.pi-theta)
             xC = np.array([x, y, 0.0])
-            
-            bRotation.get_mat4t(v1, v2, t1, t2)
-            pairs.append([xA, xB, xC])
+            #            
+            xBA = xA - xB
+            cBA = cA - cB
+            m4 = bRotation.get_mat4t(xBA, cBA, cB, xB)
+            coordC = np.dot(m4, np.append(xC, 1.0))[0:3]
+            pairs.append([coordA, coordB, coordC])
             print xB, xC
         # exit()    
         # build transformation matrix
