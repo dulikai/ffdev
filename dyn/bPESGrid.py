@@ -31,16 +31,19 @@ class bPESGrid:
         # suppose the xyz geom is given..
         
         frg = [[0,1,2,3], [4]]
-        ndx = [[0], [4]]
-        
+        ndx = [[0], [4]]        
         tbl = {"start": 3.0, "end": 10.0, "size": 0.1}
+        
         # build ndx center for radical moving..
         cA = xyz.get_center(ndx[0])
         cB = xyz.get_center(ndx[1])
         
         # mapping   
-        # place frag 1 at the origin.
-        coordA = np.zeros(3)
+        # setup directional vector..
+        direction = cB - cA
+        udir = direction / np.linalg.norm(direction)
+        # place frg 1 fixed.
+        coordA = cA
         # then we can build a series of A, B pairs,
         # for which, the radical scan is done..
         #
@@ -51,7 +54,7 @@ class bPESGrid:
         pairs = []
         for i in xrange(n_points):
             rad = start + size * i
-            coordB = np.array([-rad, 0.0, 0.0])
+            coordB = cA + udir * rad
             pairs.append([coordA, coordB])
             
         # build transformation matrix
@@ -77,7 +80,56 @@ class bPESGrid:
         
         
     def angle(self, mol):
-        return
+
+         # suppose the xyz geom is given..
+        
+        frg = [[0,1,2,3], [4]]
+        ndx = [[1], [0], [4]]        
+        tbl = {"start": 3.0, "end": 10.0, "size": 0.1}
+        
+        # build ndx center for radical moving..
+        cA = xyz.get_center(ndx[0])
+        cB = xyz.get_center(ndx[1])
+        
+        # mapping   
+        # setup directional vector..
+        direction = cB - cA
+        udir = direction / np.linalg.norm(direction)
+        # place frg 1 fixed.
+        coordA = cA
+        # then we can build a series of A, B pairs,
+        # for which, the radical scan is done..
+        #
+        start = tbl['start']
+        end = tbl['end']
+        size = tbl['size']
+        n_points = int((end-start)/size)
+        pairs = []
+        for i in xrange(n_points):
+            rad = start + size * i
+            coordB = cA + udir * rad
+            pairs.append([coordA, coordB])
+            
+        # build transformation matrix
+        mat = []
+        for i in xrange(n_points):
+            coordA = pairs[i][0]
+            coordB = pairs[i][1]
+            vec = coordA - cA
+            mA = bRotation.get_trans_mat4(vec)
+            vec =  coordB - cB
+            mB = bRotation.get_trans_mat4(vec)
+            mat.append([mA, mB])
+            
+        # do the transformation
+        model = xyzModel()
+        for m in mat:
+            t = copy.deepcopy(xyz)
+            t.transform(m[0], frg[0])
+            t.transform(m[1], frg[1])
+            model.extend(t)
+        model.dump()    
+        return model
         
         
     def mapping(self):
