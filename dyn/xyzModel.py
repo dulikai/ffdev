@@ -387,7 +387,7 @@ class xyzSingle:
         # xyz file
         fp = open(filename, "r")
         n_site = int(fp.readline())
-        self.title = fp.readline()
+        self.title = fp.readline().strip()
         sites = [xyzPoint() for i in xrange(n_site)]
         for i in xrange(n_site):
             line = fp.readline()
@@ -434,6 +434,17 @@ class xyzSingle:
         point = self.sites[i];
         return point.pos
         
+    def get_center(self, ndx = []):
+        """ return geom. center of a list of sites """
+        n_site = self.n_site    
+        if ndx == []:
+            print "center of the system"
+            ndx = [i for i in xrange(n_site)]    
+        coord = np.zeros(3)
+        for i in ndx:
+            coord += self.sites[i].pos / len(ndx)
+        return coord
+        
     def set_info(self, origin=0, direction=1):
         """ set the rotation scheme """
         self.center_id = origin
@@ -449,6 +460,17 @@ class xyzSingle:
             m4 = copy.deepcopy(m)
             #if i == self.center_id:
             #    m4[0:3,0:3] = np.eye(3)
+            self.sites[i] = self.sites[i].transfrom(m4)
+        return 
+            
+    def transform(self, m, ndx=[]):
+        """ rigid body motion of this mole. """
+        n_site = self.n_site    
+        if ndx == []:
+            print "transformation for the whole mol"
+            ndx = [i for i in xrange(n_site)]    
+        for i in ndx:
+            m4 = copy.deepcopy(m)
             self.sites[i] = self.sites[i].transfrom(m4)
         return 
             
