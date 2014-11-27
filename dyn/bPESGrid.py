@@ -85,17 +85,24 @@ class bPESGrid:
         """
          # suppose the xyz geom is given..
         
-        frg = [[0,1,2,3,4], [5,6,7,8,9]]
-        ndx = [[0], [4], [9]]        
+        frg = [[0,1,2,3,4], [5]]
+        ndx = [[0], [4], [5]]        
         tbl = {"start": 90.0, "end": 270.0, "size": 1.0}
         
         # build ndx center for angle moving..
         cA = xyz.get_center(ndx[0])
         cB = xyz.get_center(ndx[1])
         cC = xyz.get_center(ndx[2])
-        print cA, cB, cC
+        
         # mapping   
-        # setup 
+        # setup A B C at the origin
+        # C --- B --- A --> x axis
+        # frag 1 no rotation
+        rAB = np.linalg.norm(cB-cA)
+        oA = np.array([rAB, 0.0, 0.0])
+        oB = np.zeros(3)
+
+        
         plane = bRotation.make_plane(cA, cB, cC)
         axis = plane[0:3]
         # place frg 1 fixed.
@@ -110,22 +117,21 @@ class bPESGrid:
         n_points = int((end-start)/size)
         pairs = []
         for i in xrange(n_points):
+            # suppose in xy plane
             theta = start + size * i
-            xA = np.array([-np.linalg.norm(cA-cB), 0.0, 0.0])
-            xB = np.zeros(3)
-            r0 = np.linalg.norm(cB-cC)
-            x = r0*np.cos(np.pi-theta)
-            y = r0*np.sin(np.pi-theta)
-            xC = np.array([x, y, 0.0])
-            #            
-            xBA = xA - xB
-            cBA = cA - cB
-            m4 = bRotation.get_mat4t(xBA, cBA, cB, xB)
-            coordC = np.dot(m4, np.append(xC, 1.0))[0:3]
-            pairs.append([coordA, coordB, coordC])
-            print xB, xC
+            rBC = np.linalg.norm(cC-cB)
+            x = rBC * np.cos(theta)
+            y = rBC * np.sin(theta)
+            oC = np.array([x, y, 0.0])
+            pairs.append([oA, oB, oC])
+            print oA, oB, oC
+
+
+        exit()
+        m4 = bRotation.get_mat4t(xBA, cBA, cB, xB)
+        coordC = np.dot(m4, np.append(xC, 1.0))[0:3]
         # exit()    
-        # build transformation matrix
+        # build transformation matrix @
         mat = []
         for i in xrange(n_points):
             coordA = pairs[i][0]
@@ -320,7 +326,7 @@ if __name__ == "__main__":
     # template
     os.chdir("tmp")
     xyz = xyzSingle()
-    xyz.read(filename="10.xyz")
+    xyz.read(filename="ch3brcl.xyz")
     pes = bPESGrid()
     # pes.radical(xyz)
     pes.angle(xyz)
