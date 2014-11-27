@@ -101,16 +101,9 @@ class bPESGrid:
         rAB = np.linalg.norm(cB-cA)
         oA = np.array([rAB, 0.0, 0.0])
         oB = np.zeros(3)
-
         
-        plane = bRotation.make_plane(cA, cB, cC)
-        axis = plane[0:3]
-        # place frg 1 fixed.
-        coordA = cA
-        coordB = cB
-        # then we can build a series of A, B pairs,
+        # then we can build a series of A, B, C pairs,
         # for which, the radical scan is done..
-        #
         start = tbl['start'] / 180.0 * np.pi
         end = tbl['end'] / 180.0 * np.pi
         size = tbl['size'] / 180.0 * np.pi
@@ -124,30 +117,32 @@ class bPESGrid:
             y = rBC * np.sin(theta)
             oC = np.array([x, y, 0.0])
             pairs.append([oA, oB, oC])
-            print oA, oB, oC
-
-
-        exit()
-        m4 = bRotation.get_mat4t(xBA, cBA, cB, xB)
-        coordC = np.dot(m4, np.append(xC, 1.0))[0:3]
-        # exit()    
+            # print oA, oB, oC
         # build transformation matrix @
         mat = []
         for i in xrange(n_points):
-            coordA = pairs[i][0]
-            coordB = pairs[i][1]
-            coordC = pairs[i][2]
-            # A-B --- C , A-B --- C'
-            v1 = coordC - coordB
-            v2 = cC - coordB
-            m = bRotation.get_rot_mat4v(v1, v2)
-            mat.append(m)
-            
+            oA = pairs[i][0]
+            oB = pairs[i][1]
+            oC = pairs[i][2]
+            # A-B --- C , A'-B' --- C'
+            oBA = oA - oB
+            oBC = oC - oB
+            cBA = cA - cB
+            cBC = cC - cB
+            # print np.linalg.norm(oBC)-np.linalg.norm(cBC)
+            # build matrix
+            mA = bRotation.get_mat4t(cBA, oBA, cA, oA)
+            mB = bRotation.get_mat4t(cBC, oBC, cC, oC)
+            mat.append([mA, mB])
+
+            coordC = np.dot(mB, np.append(cC, 1.0))[0:3]
+            # print coordC
         # do the transformation
         model = xyzModel()
         for m in mat:
             t = copy.deepcopy(xyz)
-            t.transform(m, frg[1])
+            t.transform(m[0], frg[0])
+            t.transform(m[1], frg[1])
             model.extend(t)
         model.dump()    
         return model

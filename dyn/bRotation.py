@@ -173,6 +173,10 @@ class bRotation:
         
     @staticmethod    
     def get_mat4t(v1, v2, t1, t2):
+        """
+        t1: start point, t2: end point
+        v1: start , v2: ref. end. target.
+        """
         vt = t2 - t1
         m = bRotation.get_mat4v(v1, v2, vt)
         return m
