@@ -99,7 +99,7 @@ class bPESGrid:
         # C --- B --- A --> x axis
         # frag 1 no rotation
         rAB = np.linalg.norm(cB-cA)
-        oA = np.array([rAB, 0.0, 0.0])
+        oA = np.array([-rAB, 0.0, 0.0])
         oB = np.zeros(3)
         
         # then we can build a series of A, B, C pairs,
@@ -113,8 +113,8 @@ class bPESGrid:
             # suppose in xy plane
             theta = start + size * i
             rBC = np.linalg.norm(cC-cB)
-            x = rBC * np.cos(theta)
-            y = rBC * np.sin(theta)
+            x = rBC * np.cos(np.pi-theta)
+            y = rBC * np.sin(np.pi-theta)
             oC = np.array([x, y, 0.0])
             pairs.append([oA, oB, oC])
             # print oA, oB, oC
@@ -133,10 +133,15 @@ class bPESGrid:
             # build matrix
             mA = bRotation.get_mat4t(cBA, oBA, cA, oA)
             mB = bRotation.get_mat4t(cBC, oBC, cC, oC)
+            mA[0:3,0:3] = np.eye(3)
+            mB[0:3,0:3] = np.eye(3)
             mat.append([mA, mB])
-
-            coordC = np.dot(mB, np.append(cC, 1.0))[0:3]
-            # print coordC
+            print cC
+            print mB
+            # print np.linalg.norm(oC)
+            xC = np.append(cA, 1.0)
+            coordC = np.dot(mA, xC)[0:3]
+            print coordC 
         # do the transformation
         model = xyzModel()
         for m in mat:
