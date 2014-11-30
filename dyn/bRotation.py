@@ -159,6 +159,8 @@ class bRotation:
     def get_rot_mat4v(v1, v2):
         """
         v1 v2 is the directional vector
+        and
+        rotation from v1 to v2
         """
         axis, theta = bRotation.get_axis_theta(v1, v2)
         #print axis, theta

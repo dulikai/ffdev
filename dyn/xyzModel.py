@@ -453,22 +453,25 @@ class xyzSingle:
         v = self.bond_vector(origin, direction)
         return p, v
         
-    def transform(self, m):
-        """ rigid body motion of this mole. """
-        n_site = self.n_site
-        for i in xrange(n_site):
-            m4 = copy.deepcopy(m)
-            #if i == self.center_id:
-            #    m4[0:3,0:3] = np.eye(3)
-            self.sites[i] = self.sites[i].transfrom(m4)
-        return 
+    # def transform(self, m):
+        # """ rigid body motion of this mole. """
+        # n_site = self.n_site
+        # for i in xrange(n_site):
+            # m4 = copy.deepcopy(m)
+            # self.sites[i] = self.sites[i].transfrom(m4)
+        # return 
             
-    def transform(self, m, ndx=[]):
+    def transform(self, m, ndx=[], excl=[]):
         """ rigid body motion of this mole. """
         n_site = self.n_site    
-        if ndx == []:
+        if len(ndx) == 0:
             print "transformation for the whole mol"
-            ndx = [i for i in xrange(n_site)]    
+            ndx = [i for i in xrange(n_site)]
+            excl = []
+        else:
+            a = set(ndx)
+            b = set(excl)
+            ndx = list(a.difference(b))
         for i in ndx:
             m4 = copy.deepcopy(m)
             self.sites[i] = self.sites[i].transfrom(m4)

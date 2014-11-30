@@ -77,7 +77,51 @@ class bPESGrid:
             model.extend(t)
         model.dump()    
         return model
+    
+
+    def ang1(self, mol):
+         # suppose the xyz geom is given..
         
+        frg = [[0,1,2,3,4], [5]]
+        ndx = [[0], [4], [5]]        
+        tbl = {"start": 90.0, "end": 270.0, "size": 1.0}
+        
+        # build ndx center for angle moving..
+        cA = xyz.get_center(ndx[0])
+        cB = xyz.get_center(ndx[1])
+        cC = xyz.get_center(ndx[2])
+        # mapping   
+        # setup A B C at the origin
+        # C --- B --- A --> x axis
+        # frag 1 no rotation
+        rAB = np.linalg.norm(cB-cA)
+        oA = np.array([-rAB, 0.0, 0.0])
+        oB = np.zeros(3)
+        # then we can build a series of A, B, C pairs,
+        # for which, the radical scan is done..
+        start = tbl['start'] / 180.0 * np.pi
+        end = tbl['end'] / 180.0 * np.pi
+        size = tbl['size'] / 180.0 * np.pi
+        n_points = int((end-start)/size)
+        pairs = []
+        fp = open("test.xyz", "w")
+        for i in xrange(n_points):
+            # suppose in xy plane
+            theta = start + size * i
+            print i, theta / np.pi * 180.0, oC
+            rBC = np.linalg.norm(cC-cB)
+            x = rBC * np.cos(np.pi-theta)
+            y = rBC * np.sin(np.pi-theta)
+            oC = np.array([x, y, 0.0])
+            pairs.append([oA, oB, oC])
+            print >>fp, "3"
+            print >>fp, ""
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oA[0], oA[1], oA[2])
+            print >>fp, "C %12.6f%12.6f%12.6f" % (oB[0], oB[1], oB[2])
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oC[0], oC[1], oC[2])
+            # print oA, oB, oC
+        fp.close()
+        return
         
     def angle(self, mol):
         """
@@ -129,29 +173,89 @@ class bPESGrid:
             oBC = oC - oB
             cBA = cA - cB
             cBC = cC - cB
-            # print np.linalg.norm(oBC)-np.linalg.norm(cBC)
             # build matrix
-            mA = bRotation.get_mat4t(cBA, oBA, cA, oA)
-            mB = bRotation.get_mat4t(cBC, oBC, cC, oC)
-            mA[0:3,0:3] = np.eye(3)
-            mB[0:3,0:3] = np.eye(3)
-            mat.append([mA, mB])
-            print cC
-            print mB
-            # print np.linalg.norm(oC)
-            xC = np.append(cA, 1.0)
-            coordC = np.dot(mA, xC)[0:3]
-            print coordC 
+            # frag 0
+            mAt = bRotation.get_trans_mat4(oB-cB)
+            mAr = bRotation.get_rot_mat4v(cBA, oBA)
+            # frag 1
+            mBt = bRotation.get_trans_mat4(oC-cC)
+            mBr = bRotation.get_rot_mat4v(cBC, oBC)
+            # summary
+            mat.append([mAt, mAr, mBt, mBr])
         # do the transformation
         model = xyzModel()
         for m in mat:
             t = copy.deepcopy(xyz)
-            t.transform(m[0], frg[0])
-            t.transform(m[1], frg[1])
+            excl = ndx[1]  # B site
+            t.transform(m[0], frg[0])  # trans.
+            t.transform(m[1], frg[0], excl) # rot.
+            t.transform(m[2], frg[1])  # trans.
+            excl = ndx[2]  # C site
+            t.transform(m[3], frg[1], excl)  # rot.
             model.extend(t)
         model.dump()    
         return model
         
+    def dihedral(self, mol):
+		""" 
+			the dihedral phi, is A-X --- Y-M dihedral.
+			maybe this is interesting to study
+			SINCE in this process, we maintain the theta1 theta2, and the distance between X/Y
+			SO the dihedral is possible to solve exactly.
+			THIS is: move the atom A/M(refer as Z) to definited position.
+			DEFINE Z(x,y,z)
+			IN our coordinate system, YXA or XYM. 
+			TO satisfy the above constraint, x is known to be fixed; y/z is movable.
+			THEY(x,y) satisfy: z^2+y^2 = x^2; z/y = tan[theta()] KNOWN x is constant.
+		"""
+		phi = self.phi_map
+		min = phi['min']
+		max = phi['max']
+		stepsize = phi['stepsize']
+		cX = self.keypoint[1]
+		cY = self.keypoint[2]
+		
+		# suppose x --- y is on the x axis.
+		if cX[0] - cY[0] < 0:
+			cid = 'donnor'  # origin is on the acceptor atoms, move donnor   X-A
+			cz = self.keypoint[0]
+			czz = cX
+			iflag_a = 0
+			iflag_d = 1
+		else:
+			cid = 'acceptor'	# origin is on the donnor atoms, move acceptor	Y-M
+			cz = self.keypoint[3]
+			czz = cY
+			iflag_a = 1
+			iflag_d = 0
+		nstepsize = int(abs(max-min)/abs(stepsize))		
+		v23 = np.subtract(cz,czz)
+		r0 = sqrt(np.dot(v23,v23))
+		for i in range(nstepsize+1):
+			rad = r0
+			angle = min+i*stepsize
+			thr = angle/180.0*pi
+			x = cz[0]  # not changed
+			y = rad * cos(thr)
+			zd = rad * sin(thr)
+			coord = np.array([x, y, zd])
+			grid = {'index': [i], 'coord': coord, 'radius':rad, 'theta1':-1, 'theta2':-1, 'phi':angle}
+			phi['grid'].append(grid)
+		self.phi_map = phi
+		for i in self.donnor:
+			k = i - 1
+			self.work_mol['atom'][k]['iflag'] = iflag_d
+		for i in self.acceptor:
+			k = i - 1
+			self.work_mol['atom'][k]['iflag'] = iflag_a
+		for i in self.xatom:
+			k = i - 1
+			self.work_mol['atom'][k]['iflag'] = 0
+		for i in self.yatom:
+			k = i - 1
+			self.work_mol['atom'][k]['iflag'] = 0
+		return
+
         
     def mapping(self):
         pass
@@ -330,6 +434,7 @@ if __name__ == "__main__":
     pes = bPESGrid()
     # pes.radical(xyz)
     pes.angle(xyz)
+    # pes.ang1(xyz)
     # origin, vec = xyz.set_info(origin=0, direction=1)
     # polygon = bPolygon()
     # polygon.regular_polygon(n=5, rad=8.0, theta=3.0, theta0=0.0)
