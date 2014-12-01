@@ -200,14 +200,40 @@ class bPESGrid:
 		""" 
 			the dihedral phi, is A-X --- Y-M dihedral.
 			maybe this is interesting to study
-			SINCE in this process, we maintain the theta1 theta2, and the distance between X/Y
+			In this transformation, we maintain the theta1 theta2, and the distance between X/Y
 			SO the dihedral is possible to solve exactly.
-			THIS is: move the atom A/M(refer as Z) to definited position.
+			THIS is: move the atom A/M(refer as Z) to definitive position.
 			DEFINE Z(x,y,z)
 			IN our coordinate system, YXA or XYM. 
-			TO satisfy the above constraint, x is known to be fixed; y/z is movable.
+			TO satisfy the above constraint, x coord is known to be fixed; y/z is movable.
 			THEY(x,y) satisfy: z^2+y^2 = x^2; z/y = tan[theta()] KNOWN x is constant.
 		"""
+        frg = [[0,1,2,3,4], [5]]
+        ndx = [[0], [4], [5], [6]]        
+        tbl = {"start": 90.0, "end": 270.0, "size": 1.0}
+        
+        # build ndx center for DIHEDRAL moving..
+        cA = xyz.get_center(ndx[0])
+        cX = xyz.get_center(ndx[1])
+        cY = xyz.get_center(ndx[2])
+        cM = xyz.get_center(ndx[3])
+ 
+        # mapping   
+        # setup A B C at the origin
+        # C --- B --- A --> x axis
+        # frag 1 no rotation
+        rAB = np.linalg.norm(cB-cA)
+        oA = np.array([-rAB, 0.0, 0.0])
+        oB = np.zeros(3)
+        
+        # then we can build a series of A, B, C pairs,
+        # for which, the radical scan is done..
+        start = tbl['start'] / 180.0 * np.pi
+        end = tbl['end'] / 180.0 * np.pi
+        size = tbl['size'] / 180.0 * np.pi
+        n_points = int((end-start)/size)
+        pairs = []
+        
 		phi = self.phi_map
 		min = phi['min']
 		max = phi['max']
@@ -255,8 +281,38 @@ class bPESGrid:
 			k = i - 1
 			self.work_mol['atom'][k]['iflag'] = 0
 		return
-
-        
+	def __gen_phi_geom_mol(self, grid):
+		""" move one molecule coordinate, ie. one frame """
+		#work_mol
+		mol = self.work_mol
+		natom = mol['natom']
+		atom = mol['atom']	
+		title = mol['title']
+		point = grid['coord']
+		index = grid['index']
+		title = "%s %s" % (title, index)
+		cX = self.keypoint[1]
+		cY = self.keypoint[2]
+		oldcoord = self.keypoint[3]
+		if cX[0] - cY[0] < 0.0:
+			oldcoord = self.keypoint[0]
+		xaxis = np.array([oldcoord[0], 0.0, 0.0])
+		oldcoord = np.subtract(oldcoord, xaxis)
+		point = np.subtract(point, xaxis)
+		theta, vdir = self.__get_axis_angle(oldcoord, point)
+		new_atom = []		
+		cmin = 1.0e-4
+		for i in range(natom):
+			record = atom[i]
+			if record['iflag'] != 0 and theta > cmin:
+				# A-X --- Y-M, the M and X vector
+				coord = self.point_rotate_ar_vector(record['coord'], vdir, theta)
+			else:
+				coord = record['coord']
+			tmp_record = {'name': record['name'], 'coord': coord, 'iflag': record['iflag'], 'index': grid['index'] }
+			new_atom.append(tmp_record)
+		self.tmp_mol = {'natom':natom, 'atom':new_atom, 'title':title}	
+		return	        
     def mapping(self):
         pass
         
