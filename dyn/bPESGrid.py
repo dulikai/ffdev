@@ -196,10 +196,19 @@ class bPESGrid:
         model.dump()    
         return model
         
+        
+    def dihedral_map(self, mol):
+        """
+        the dihedral phi, is A-X --- Y-M dihedral.
+        that is X---Y is at x-axis.
+        
+        """
+        cY = np.zeros(3)
+        
+        
     def dihedral(self, mol):
 		""" 
 			the dihedral phi, is A-X --- Y-M dihedral.
-			maybe this is interesting to study
 			In this transformation, we maintain the theta1 theta2, and the distance between X/Y
 			SO the dihedral is possible to solve exactly.
 			THIS is: move the atom A/M(refer as Z) to definitive position.
@@ -219,12 +228,49 @@ class bPESGrid:
         cM = xyz.get_center(ndx[3])
  
         # mapping   
-        # setup A B C at the origin
-        # C --- B --- A --> x axis
-        # frag 1 no rotation
-        rAB = np.linalg.norm(cB-cA)
-        oA = np.array([-rAB, 0.0, 0.0])
-        oB = np.zeros(3)
+        # Y at the origin, and X --- Y at x axis.
+        oY = np.zeros(3)
+        vYX = cX - cY
+        rXY = np.linalg.norm(vYX)
+        oX = np.array([-rXY, 0.0, 0.0])
+        theta
+        #
+        # theta1 is A-X-Y angle
+        # theta2 is X-Y-M angle
+        rXY = np.linalg.norm(cY-cX)
+        rYM = np.linalg.norm(cM-cY)
+        rXM = np.linalg.norm(cM-cX)
+        p = 0.5 * (rXY + rYM + rXM)
+        sXYM = np.sqrt(p*(p-rXY)*(p-rYM)*(p-rXM))
+        rad = sXYM / rXY
+
+        alpha = np.pi*0.5 - theta2
+        rAX = np.linalg.norm(cX-cA)
+        AX = cX - cA
+        oA = 
+        
+        # r, alpha, beta
+        # alpha: r and z axis angle
+        # beta: x axis and .. angle
+        
+        start = tbl['start'] / 180.0 * np.pi
+        end = tbl['end'] / 180.0 * np.pi
+        size = tbl['size'] / 180.0 * np.pi
+        n_points = int((end-start)/size)
+		v23 = np.subtract(cz,czz)
+		r0 = sqrt(np.dot(v23,v23))
+        rYM= np.linalg.norm(cM-cY)
+		for i in range(nstepsize+1):
+            # suppose in A-X-Y in xy plane
+            phi = start + size * i
+			x = cz[0]  # not changed
+            x = 
+			y = rad * cos(thr)
+			zd = rad * sin(thr)
+			coord = np.array([x, y, zd])
+			grid = {'index': [i], 'coord': coord, 'radius':rad, 'theta1':-1, 'theta2':-1, 'phi':angle}
+			phi['grid'].append(grid)
+        
         
         # then we can build a series of A, B, C pairs,
         # for which, the radical scan is done..
