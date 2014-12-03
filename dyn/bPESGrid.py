@@ -197,28 +197,22 @@ class bPESGrid:
         return model
         
         
-    def dihedral_map(self, mol):
-        """
+    def dihedral(self, mol):
+        """ 
         the dihedral phi, is A-X --- Y-M dihedral.
         that is X---Y is at x-axis.
-        
-        """
-        cY = np.zeros(3)
-        
-        
-    def dihedral(self, mol):
-		""" 
-			the dihedral phi, is A-X --- Y-M dihedral.
-			In this transformation, we maintain the theta1 theta2, and the distance between X/Y
-			SO the dihedral is possible to solve exactly.
-			THIS is: move the atom A/M(refer as Z) to definitive position.
-			DEFINE Z(x,y,z)
-			IN our coordinate system, YXA or XYM. 
-			TO satisfy the above constraint, x coord is known to be fixed; y/z is movable.
-			THEY(x,y) satisfy: z^2+y^2 = x^2; z/y = tan[theta()] KNOWN x is constant.
+
+        the dihedral phi, is A-X --- Y-M dihedral.
+        In this transformation, we maintain the theta1 theta2, and the distance between X/Y
+        SO the dihedral is possible to solve exactly.
+        THIS is: move the atom A/M(refer as Z) to definitive position.
+        DEFINE Z(x,y,z)
+        IN our coordinate system, YXA or XYM. 
+        TO satisfy the above constraint, x coord is known to be fixed; y/z is movable.
+        THEY(x,y) satisfy: z^2+y^2 = x^2; z/y = tan[theta()] KNOWN x is constant.
 		"""
-        frg = [[0,1,2,3,4], [5]]
-        ndx = [[0], [4], [5], [6]]        
+        frg = [[0,1,2,3,4], [5,6,7,8,9]]
+        ndx = [[0], [4], [9], [5]]        
         tbl = {"start": 90.0, "end": 270.0, "size": 1.0}
         
         # build ndx center for DIHEDRAL moving..
@@ -236,118 +230,75 @@ class bPESGrid:
         vYX = cX - cY
         rXY = np.linalg.norm(vYX)
         oX = np.array([rXY, 0.0, 0.0])
-        # M center
-        rXY = np.linalg.norm(cY-cX)
-        rYM = np.linalg.norm(cM-cY)
-        rXM = np.linalg.norm(cM-cX)
-        p = 0.5 * (rXY + rYM + rXM)
-        sXYM = np.sqrt(p*(p-rXY)*(p-rYM)*(p-rXM))
-        rad = sXYM / rXY
-        x = rad
-		y = rad * cos(phi)
-		z = rad * sin(phi)
-        oM = np.array([x, y, z])
-        # A center
+        
         # theta1 is A-X-Y angle
-        theta1 = np.dot(v
-        rAX = np.linalg.norm(cX-cA)
-        rAY = np.linalg.norm(cY-cA)
-        p = 0.5 * (rXY+rAX+rAY)
-        sXYA = np.sqrt(p*(p-rXY)*(p-rAX)*(p-rAY))
-        rad = sXYA / rXY
-        x = 
-        y = rXY - rAX * 
-        z = 0.0
-        
-        
-        theta
-        #
-        # 
+        vXY = cY - cX; vXA = cA - cX;
+        rXY = np.linalg.norm(vXY)
+        rXA = np.linalg.norm(vXA)
+        costheta1 = np.dot(vXY, vXA) / (rXY * rXA)
         # theta2 is X-Y-M angle
-
-        alpha = np.pi*0.5 - theta2
-        rAX = np.linalg.norm(cX-cA)
-        AX = cX - cA
-        oA = 
+        vYX = -vXY; vYM = cM - cY;
+        rYX = rXY
+        rYM = np.linalg.norm(vYM)
+        costheta2 = np.dot(vYX, vYM) / (rYX * rYM)
+        # theta 1 2
+        theta1 = np.arccos(costheta1)
+        theta2 = np.arccos(costheta2)
         
-        # r, alpha, beta
-        # alpha: r and z axis angle
-        # beta: x axis and .. angle
+        # A center
+        z = 0.0
+        y = -rXA * np.sin(theta1)
+        x = rXY - rXA * np.cos(theta1)
+        oA = np.array([x, y, z])
         
-        start = tbl['start'] / 180.0 * np.pi
-        end = tbl['end'] / 180.0 * np.pi
-        size = tbl['size'] / 180.0 * np.pi
-        n_points = int((end-start)/size)
-		v23 = np.subtract(cz,czz)
-		r0 = sqrt(np.dot(v23,v23))
-        rYM= np.linalg.norm(cM-cY)
-		for i in range(nstepsize+1):
-            # suppose in A-X-Y in xy plane
-            phi = start + size * i
-			x = cz[0]  # not changed
-            x = 
-			y = rad * cos(thr)
-			zd = rad * sin(thr)
-			coord = np.array([x, y, zd])
-			grid = {'index': [i], 'coord': coord, 'radius':rad, 'theta1':-1, 'theta2':-1, 'phi':angle}
-			phi['grid'].append(grid)
-        
-        
-        # then we can build a series of A, B, C pairs,
-        # for which, the radical scan is done..
         start = tbl['start'] / 180.0 * np.pi
         end = tbl['end'] / 180.0 * np.pi
         size = tbl['size'] / 180.0 * np.pi
         n_points = int((end-start)/size)
         pairs = []
+        fp = open("test.xyz", "w")
+        for i in xrange(n_points):
+            # suppose in Y, X point in x axis
+            phi = start + size * i
+            # M center
+            x = rYM * np.cos(theta2)
+            y = x * np.cos(phi)
+            z = x * np.sin(phi)
+            oM = np.array([x, y, z])
+            pairs.append([oA, oX, oY, oM])
+            print >>fp, "4"
+            print >>fp, ""
+            print >>fp, "H %12.6f%12.6f%12.6f" % (oA[0], oA[1], oA[2])
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oX[0], oX[1], oX[2])
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oY[0], oY[1], oY[2])
+            print >>fp, "H %12.6f%12.6f%12.6f" % (oM[0], oM[1], oM[2])
+        fp.close()    
+        exit()
         
-		phi = self.phi_map
-		min = phi['min']
-		max = phi['max']
-		stepsize = phi['stepsize']
-		cX = self.keypoint[1]
-		cY = self.keypoint[2]
-		
-		# suppose x --- y is on the x axis.
-		if cX[0] - cY[0] < 0:
-			cid = 'donnor'  # origin is on the acceptor atoms, move donnor   X-A
-			cz = self.keypoint[0]
-			czz = cX
-			iflag_a = 0
-			iflag_d = 1
-		else:
-			cid = 'acceptor'	# origin is on the donnor atoms, move acceptor	Y-M
-			cz = self.keypoint[3]
-			czz = cY
-			iflag_a = 1
-			iflag_d = 0
-		nstepsize = int(abs(max-min)/abs(stepsize))		
-		v23 = np.subtract(cz,czz)
-		r0 = sqrt(np.dot(v23,v23))
-		for i in range(nstepsize+1):
-			rad = r0
-			angle = min+i*stepsize
-			thr = angle/180.0*pi
-			x = cz[0]  # not changed
-			y = rad * cos(thr)
-			zd = rad * sin(thr)
-			coord = np.array([x, y, zd])
-			grid = {'index': [i], 'coord': coord, 'radius':rad, 'theta1':-1, 'theta2':-1, 'phi':angle}
-			phi['grid'].append(grid)
-		self.phi_map = phi
-		for i in self.donnor:
-			k = i - 1
-			self.work_mol['atom'][k]['iflag'] = iflag_d
-		for i in self.acceptor:
-			k = i - 1
-			self.work_mol['atom'][k]['iflag'] = iflag_a
-		for i in self.xatom:
-			k = i - 1
-			self.work_mol['atom'][k]['iflag'] = 0
-		for i in self.yatom:
-			k = i - 1
-			self.work_mol['atom'][k]['iflag'] = 0
-		return
+        
+        # r, alpha, beta
+        # alpha: r and z axis angle
+        # beta: x axis and .. angle
+        
+		# v23 = np.subtract(cz,czz)
+		# r0 = sqrt(np.dot(v23,v23))
+        # rYM= np.linalg.norm(cM-cY)
+		# for i in range(nstepsize+1):
+            # suppose in A-X-Y in xy plane
+            # phi = start + size * i
+			# x = cz[0]  # not changed
+            # x = 
+			# y = rad * cos(thr)
+			# zd = rad * sin(thr)
+			# coord = np.array([x, y, zd])
+			# grid = {'index': [i], 'coord': coord, 'radius':rad, 'theta1':-1, 'theta2':-1, 'phi':angle}
+			# phi['grid'].append(grid)
+        
+        
+        # then we can build a series of A, B, C pairs,
+        # for which, the radical scan is done..
+        
+        return
 	def __gen_phi_geom_mol(self, grid):
 		""" move one molecule coordinate, ie. one frame """
 		#work_mol
@@ -553,10 +504,11 @@ if __name__ == "__main__":
     # template
     os.chdir("tmp")
     xyz = xyzSingle()
-    xyz.read(filename="ch3brcl.xyz")
+    xyz.read(filename="ch3br2.xyz")
     pes = bPESGrid()
     # pes.radical(xyz)
-    pes.angle(xyz)
+    # pes.angle(xyz)
+    pes.dihedral(xyz)
     # pes.ang1(xyz)
     # origin, vec = xyz.set_info(origin=0, direction=1)
     # polygon = bPolygon()
