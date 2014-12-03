@@ -229,20 +229,41 @@ class bPESGrid:
  
         # mapping   
         # Y at the origin, and X --- Y at x axis.
+        # M--Y--X--A
+        # Y center
         oY = np.zeros(3)
+        # X center
         vYX = cX - cY
         rXY = np.linalg.norm(vYX)
-        oX = np.array([-rXY, 0.0, 0.0])
-        theta
-        #
-        # theta1 is A-X-Y angle
-        # theta2 is X-Y-M angle
+        oX = np.array([rXY, 0.0, 0.0])
+        # M center
         rXY = np.linalg.norm(cY-cX)
         rYM = np.linalg.norm(cM-cY)
         rXM = np.linalg.norm(cM-cX)
         p = 0.5 * (rXY + rYM + rXM)
         sXYM = np.sqrt(p*(p-rXY)*(p-rYM)*(p-rXM))
         rad = sXYM / rXY
+        x = rad
+		y = rad * cos(phi)
+		z = rad * sin(phi)
+        oM = np.array([x, y, z])
+        # A center
+        # theta1 is A-X-Y angle
+        theta1 = np.dot(v
+        rAX = np.linalg.norm(cX-cA)
+        rAY = np.linalg.norm(cY-cA)
+        p = 0.5 * (rXY+rAX+rAY)
+        sXYA = np.sqrt(p*(p-rXY)*(p-rAX)*(p-rAY))
+        rad = sXYA / rXY
+        x = 
+        y = rXY - rAX * 
+        z = 0.0
+        
+        
+        theta
+        #
+        # 
+        # theta2 is X-Y-M angle
 
         alpha = np.pi*0.5 - theta2
         rAX = np.linalg.norm(cX-cA)
