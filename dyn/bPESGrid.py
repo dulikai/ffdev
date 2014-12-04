@@ -197,6 +197,85 @@ class bPESGrid:
         return model
         
         
+    def dihedral1(self, mol):
+        """ 
+        the dihedral phi, is A-X --- Y-M dihedral.
+        that is X---Y is at x-axis.
+
+        the dihedral phi, is A-X --- Y-M dihedral.
+        In this transformation, we maintain the theta1 theta2, and the distance between X/Y
+        SO the dihedral is possible to solve exactly.
+        THIS is: move the atom A/M(refer as Z) to definitive position.
+        DEFINE Z(x,y,z)
+        IN our coordinate system, YXA or XYM. 
+        TO satisfy the above constraint, x coord is known to be fixed; y/z is movable.
+        THEY(x,y) satisfy: z^2+y^2 = x^2; z/y = tan[theta()] KNOWN x is constant.
+		"""
+        frg = [[0,1,2,3,4], [5,6,7,8,9]]
+        ndx = [[0], [4], [9], [5]]        
+        tbl = {"start": 90.0, "end": 270.0, "size": 1.0}
+        
+        # build ndx center for DIHEDRAL moving..
+        cA = xyz.get_center(ndx[0])
+        cX = xyz.get_center(ndx[1])
+        cY = xyz.get_center(ndx[2])
+        cM = xyz.get_center(ndx[3])
+ 
+        # mapping   
+        # Y at the origin, and X --- Y at x axis.
+        # M--Y--X--A
+        # Y center
+        oY = np.zeros(3)
+        # X center
+        vYX = cX - cY
+        rXY = np.linalg.norm(vYX)
+        oX = np.array([rXY, 0.0, 0.0])
+        
+        # theta1 is A-X-Y angle
+        vXY = cY - cX; vXA = cA - cX;
+        rXY = np.linalg.norm(vXY)
+        rXA = np.linalg.norm(vXA)
+        costheta1 = np.dot(vXY, vXA) / (rXY * rXA)
+        # theta2 is X-Y-M angle
+        vYX = -vXY; vYM = cM - cY;
+        rYX = rXY
+        rYM = np.linalg.norm(vYM)
+        costheta2 = np.dot(vYX, vYM) / (rYX * rYM)
+        # theta 1 2
+        theta1 = np.arccos(costheta1)
+        theta2 = np.arccos(costheta2)
+        
+        # A center
+        z = 0.0
+        y = -rXA * np.sin(theta1)
+        x = rXY - rXA * np.cos(theta1)
+        oA = np.array([x, y, z])
+        
+        start = tbl['start'] / 180.0 * np.pi
+        end = tbl['end'] / 180.0 * np.pi
+        size = tbl['size'] / 180.0 * np.pi
+        n_points = int((end-start)/size)
+        pairs = []
+        fp = open("test.xyz", "w")
+        for i in xrange(n_points):
+            # suppose in Y, X point in x axis
+            phi = start + size * i
+            # M center
+            x = rYM * np.cos(theta2)
+            y = x * np.cos(phi)
+            z = x * np.sin(phi)
+            oM = np.array([x, y, z])
+            pairs.append([oA, oX, oY, oM])
+            print >>fp, "4"
+            print >>fp, ""
+            print >>fp, "H %12.6f%12.6f%12.6f" % (oA[0], oA[1], oA[2])
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oX[0], oX[1], oX[2])
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oY[0], oY[1], oY[2])
+            print >>fp, "H %12.6f%12.6f%12.6f" % (oM[0], oM[1], oM[2])
+        fp.close()    
+        return
+        
+        
     def dihedral(self, mol):
         """ 
         the dihedral phi, is A-X --- Y-M dihedral.
@@ -273,31 +352,40 @@ class bPESGrid:
             print >>fp, "O %12.6f%12.6f%12.6f" % (oY[0], oY[1], oY[2])
             print >>fp, "H %12.6f%12.6f%12.6f" % (oM[0], oM[1], oM[2])
         fp.close()    
-        exit()
         
-        
-        # r, alpha, beta
-        # alpha: r and z axis angle
-        # beta: x axis and .. angle
-        
-		# v23 = np.subtract(cz,czz)
-		# r0 = sqrt(np.dot(v23,v23))
-        # rYM= np.linalg.norm(cM-cY)
-		# for i in range(nstepsize+1):
-            # suppose in A-X-Y in xy plane
-            # phi = start + size * i
-			# x = cz[0]  # not changed
-            # x = 
-			# y = rad * cos(thr)
-			# zd = rad * sin(thr)
-			# coord = np.array([x, y, zd])
-			# grid = {'index': [i], 'coord': coord, 'radius':rad, 'theta1':-1, 'theta2':-1, 'phi':angle}
-			# phi['grid'].append(grid)
-        
-        
-        # then we can build a series of A, B, C pairs,
-        # for which, the radical scan is done..
-        
+        # build transformation matrix @
+        mat = []
+        for i in xrange(n_points):
+            oA = pairs[i][0]
+            oX = pairs[i][1]
+            oY = pairs[i][2]
+            oM = pairs[i][3]
+            # A-X Y-M to oXA oYM
+            oXA = oA - oX
+            cXA = cA - cX
+            oYM = oM - oY
+            cYM = cM - cY
+            # build matrix
+            # frag 0
+            mAt = bRotation.get_trans_mat4(oX-cX) # X center
+            mAr = bRotation.get_rot_mat4v(cXA, oXA)
+            # frag 1
+            mBt = bRotation.get_trans_mat4(oY-cY) # Y center
+            mBr = bRotation.get_rot_mat4v(cYM, oYM)
+            # summary
+            mat.append([mAt, mAr, mBt, mBr])
+        # do the transformation
+        model = xyzModel()
+        for m in mat:
+            t = copy.deepcopy(xyz)
+            excl = ndx[1]  # X site
+            t.transform(m[0], frg[0])  # trans.
+            t.transform(m[1], frg[0], excl) # rot.
+            t.transform(m[2], frg[1])  # trans.
+            excl = ndx[2]  # Y site
+            t.transform(m[3], frg[1], excl)  # rot.
+            model.extend(t)
+        model.dump()    
         return
 	def __gen_phi_geom_mol(self, grid):
 		""" move one molecule coordinate, ie. one frame """
