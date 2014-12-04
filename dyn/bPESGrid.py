@@ -341,8 +341,9 @@ class bPESGrid:
             phi = start + size * i
             # M center
             x = rYM * np.cos(theta2)
-            y = x * np.cos(phi)
-            z = x * np.sin(phi)
+            rad = rYM * np.sin(theta2)
+            y = rad * np.cos(phi)
+            z = rad * np.sin(phi)
             print np.sqrt(x*x+y*y+z*z)
             oM = np.array([x, y, z])
             pairs.append([oA, oX, oY, oM])
