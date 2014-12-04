@@ -343,6 +343,7 @@ class bPESGrid:
             x = rYM * np.cos(theta2)
             y = x * np.cos(phi)
             z = x * np.sin(phi)
+            print np.sqrt(x*x+y*y+z*z)
             oM = np.array([x, y, z])
             pairs.append([oA, oX, oY, oM])
             print >>fp, "4"
@@ -352,7 +353,6 @@ class bPESGrid:
             print >>fp, "O %12.6f%12.6f%12.6f" % (oY[0], oY[1], oY[2])
             print >>fp, "H %12.6f%12.6f%12.6f" % (oM[0], oM[1], oM[2])
         fp.close()    
-        
         # build transformation matrix @
         mat = []
         for i in xrange(n_points):
@@ -387,6 +387,8 @@ class bPESGrid:
             model.extend(t)
         model.dump()    
         return
+        
+        
 	def __gen_phi_geom_mol(self, grid):
 		""" move one molecule coordinate, ie. one frame """
 		#work_mol
