@@ -292,7 +292,7 @@ class bPESGrid:
 		"""
         frg = [[0,1,2,3,4], [5,6,7,8,9]]
         ndx = [[0], [4], [9], [5]]        
-        tbl = {"start": 90.0, "end": 270.0, "size": 1.0}
+        tbl = {"start": -90.0, "end": 90.0, "size": 1.0}
         
         # build ndx center for DIHEDRAL moving..
         cA = xyz.get_center(ndx[0])
@@ -329,7 +329,8 @@ class bPESGrid:
         y = -rXA * np.sin(theta1)
         x = rXY - rXA * np.cos(theta1)
         oA = np.array([x, y, z])
-        
+        print np.sqrt(x*x+y*y+z*z)
+        print np.linalg.norm(oA-oX)
         start = tbl['start'] / 180.0 * np.pi
         end = tbl['end'] / 180.0 * np.pi
         size = tbl['size'] / 180.0 * np.pi
@@ -344,7 +345,6 @@ class bPESGrid:
             rad = rYM * np.sin(theta2)
             y = rad * np.cos(phi)
             z = rad * np.sin(phi)
-            print np.sqrt(x*x+y*y+z*z)
             oM = np.array([x, y, z])
             pairs.append([oA, oX, oY, oM])
             print >>fp, "4"
@@ -373,6 +373,8 @@ class bPESGrid:
             # frag 1
             mBt = bRotation.get_trans_mat4(oY-cY) # Y center
             mBr = bRotation.get_rot_mat4v(cYM, oYM)
+            print np.linalg.norm(oA)
+
             # summary
             mat.append([mAt, mAr, mBt, mBr])
         # do the transformation
