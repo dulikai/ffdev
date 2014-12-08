@@ -477,6 +477,8 @@ class xyzSingle:
             self.sites[i] = self.sites[i].transfrom(m4)
         return 
             
+           
+            
     def read_xyz(self):
         """ read in xyz format in angstrom unit """    
         filename = self.files['xyz']        

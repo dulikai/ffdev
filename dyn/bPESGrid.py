@@ -292,7 +292,7 @@ class bPESGrid:
 		"""
         frg = [[0,1,2,3,4], [5,6,7,8,9]]
         ndx = [[0], [4], [9], [5]]        
-        tbl = {"start": -90.0, "end": 90.0, "size": 1.0}
+        tbl = {"start": -180.0, "end": 180.0, "size": 1.0}
         
         # build ndx center for DIHEDRAL moving..
         cA = xyz.get_center(ndx[0])
@@ -323,14 +323,19 @@ class bPESGrid:
         # theta 1 2
         theta1 = np.arccos(costheta1)
         theta2 = np.arccos(costheta2)
-        
+        print theta1/np.pi*180., theta2/np.pi*180.
         # A center
         z = 0.0
         y = -rXA * np.sin(theta1)
-        x = rXY - rXA * np.cos(theta1)
+        x = rXY + rXA * np.cos(theta1)
         oA = np.array([x, y, z])
+        
         print np.sqrt(x*x+y*y+z*z)
         print np.linalg.norm(oA-oX)
+        print np.arccos(np.dot(oY-oX, oA-oX) / rXY / rXA) * 180.0 / np.pi
+        print oA, oX, oY
+        print oY-oX, oA-oX
+        
         start = tbl['start'] / 180.0 * np.pi
         end = tbl['end'] / 180.0 * np.pi
         size = tbl['size'] / 180.0 * np.pi
@@ -343,7 +348,132 @@ class bPESGrid:
             # M center
             x = rYM * np.cos(theta2)
             rad = rYM * np.sin(theta2)
-            y = rad * np.cos(phi)
+            y = -rad * np.cos(phi)
+            z = -rad * np.sin(phi)
+            oM = np.array([x, y, z])
+            pairs.append([oA, oX, oY, oM])
+            print >>fp, "4"
+            print >>fp, ""
+            print >>fp, "H %12.6f%12.6f%12.6f" % (oA[0], oA[1], oA[2])
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oX[0], oX[1], oX[2])
+            print >>fp, "O %12.6f%12.6f%12.6f" % (oY[0], oY[1], oY[2])
+            print >>fp, "H %12.6f%12.6f%12.6f" % (oM[0], oM[1], oM[2])
+        fp.close()    
+        # build transformation matrix @
+        mat = []
+        for i in xrange(n_points):
+            oA = pairs[i][0]
+            oX = pairs[i][1]
+            oY = pairs[i][2]
+            oM = pairs[i][3]
+            # A-X Y-M to oXA oYM
+            oXA = oA - oX
+            cXA = cA - cX
+            oYM = oM - oY
+            cYM = cM - cY
+            # build matrix
+            # frag 0
+            mAt = bRotation.get_trans_mat4(oX-cX) # X center
+            mt = bRotation.get_trans_mat4(oY-oX)  # oX --> oY
+            mAr = bRotation.get_rot_mat4v(cXA, oXA)
+            mAr = np.dot(mt, mAr)
+            mAr = np.dot(mAr, -mt)
+            print np.arccos(np.dot(oY-oX, oA-oX) / rXY / rXA) * 180.0 / np.pi
+            
+            # frag 1
+            mBt = bRotation.get_trans_mat4(oY-cY) # Y center
+            mBr = bRotation.get_rot_mat4v(cYM, oYM)
+
+            # summary
+            mat.append([mAt, mAr, mBt, mBr])
+        # do the transformation
+        model = xyzModel()
+        for m in mat:
+            t = copy.deepcopy(xyz)
+            excl = ndx[1]  # X site
+            t.transform(m[0], frg[0])  # trans.
+            t.transform(m[1], frg[0], excl) # rot.
+            t.transform(m[2], frg[1])  # trans.
+            excl = ndx[2]  # Y site
+            t.transform(m[3], frg[1], excl)  # rot.
+            model.extend(t)
+        model.dump()    
+        return
+        
+
+    def dihedral(self, mol):
+        """ 
+        the dihedral phi, is A-X --- Y-M dihedral.
+        that is X---Y is at x-axis.
+
+        the dihedral phi, is A-X --- Y-M dihedral.
+        In this transformation, we maintain the theta1 theta2, and the distance between X/Y
+        SO the dihedral is possible to solve exactly.
+        THIS is: move the atom A/M(refer as Z) to definitive position.
+        DEFINE Z(x,y,z)
+        IN our coordinate system, YXA or XYM. 
+        TO satisfy the above constraint, x coord is known to be fixed; y/z is movable.
+        THEY(x,y) satisfy: z^2+y^2 = x^2; z/y = tan[theta()] KNOWN x is constant.
+		"""
+        frg = [[0,1,2,3,4], [5,6,7,8,9]]
+        ndx = [[0], [4], [9], [5]]        
+        tbl = {"start": 0.0, "end": 180.0, "size": 1.0}
+        
+        # build ndx center for DIHEDRAL moving..
+        cA = xyz.get_center(ndx[0])
+        cX = xyz.get_center(ndx[1])
+        cY = xyz.get_center(ndx[2])
+        cM = xyz.get_center(ndx[3])
+ 
+        # mapping   
+        # Y at the origin, and X --- Y at x axis.
+        # M--Y--X--A
+        # Y center
+        oY = np.zeros(3)
+        # X center
+        vYX = cX - cY
+        rXY = np.linalg.norm(vYX)
+        oX = np.array([rXY, 0.0, 0.0])
+        
+        # theta1 is A-X-Y angle
+        vXY = cY - cX; vXA = cA - cX;
+        rXY = np.linalg.norm(vXY)
+        rXA = np.linalg.norm(vXA)
+        costheta1 = np.dot(vXY, vXA) / (rXY * rXA)
+        # theta2 is X-Y-M angle
+        vYX = -vXY; vYM = cM - cY;
+        rYX = rXY
+        rYM = np.linalg.norm(vYM)
+        costheta2 = np.dot(vYX, vYM) / (rYX * rYM)
+        # theta 1 2
+        theta1 = np.arccos(costheta1)
+        theta2 = np.arccos(costheta2)
+        # print theta1/np.pi*180., theta2/np.pi*180.
+        # A center
+        z = 0.0
+        y = -rXA * np.sin(theta1)
+        x = oX[0] - rXA * np.cos(theta1)
+        oA = np.array([x, y, z])
+        
+        print np.sqrt(x*x+y*y+z*z)
+        # print np.linalg.norm(oA-oX)
+        # print np.arccos(np.dot(oY-oX, oA-oX) / rXY / rXA) * 180.0 / np.pi
+        # print oA, oX, oY
+        # print oY-oX, oA-oX
+        
+        start = tbl['start'] / 180.0 * np.pi
+        end = tbl['end'] / 180.0 * np.pi
+        size = tbl['size'] / 180.0 * np.pi
+        n_points = int((end-start)/size)
+        pairs = []
+        fp = open("test.xyz", "w")
+        for i in xrange(n_points):
+            # suppose in Y, X point in x axis
+            phi = start + size * i
+            # M center
+            x = rYM * np.cos(theta2)
+            rad = rYM * np.sin(theta2)
+            y = -rad * np.cos(phi)
             z = rad * np.sin(phi)
             oM = np.array([x, y, z])
             pairs.append([oA, oX, oY, oM])
@@ -369,11 +499,15 @@ class bPESGrid:
             # build matrix
             # frag 0
             mAt = bRotation.get_trans_mat4(oX-cX) # X center
-            mAr = bRotation.get_rot_mat4v(cXA, oXA)
+            mt = bRotation.get_trans_mat4(-oX)  # oX --> oY
+            mAr = bRotation.get_rot_mat4v(cXA, -oXA)
+            mAr = np.dot(mAr, mt)
+            mAr = np.dot(-mt, mAr)
+            # print np.arccos(np.dot(oY-oX, oA-oX) / rXY / rXA) * 180.0 / np.pi
+            print mAr
             # frag 1
             mBt = bRotation.get_trans_mat4(oY-cY) # Y center
             mBr = bRotation.get_rot_mat4v(cYM, oYM)
-            print np.linalg.norm(oA)
 
             # summary
             mat.append([mAt, mAr, mBt, mBr])
@@ -390,42 +524,8 @@ class bPESGrid:
             model.extend(t)
         model.dump()    
         return
-        
-        
-	def __gen_phi_geom_mol(self, grid):
-		""" move one molecule coordinate, ie. one frame """
-		#work_mol
-		mol = self.work_mol
-		natom = mol['natom']
-		atom = mol['atom']	
-		title = mol['title']
-		point = grid['coord']
-		index = grid['index']
-		title = "%s %s" % (title, index)
-		cX = self.keypoint[1]
-		cY = self.keypoint[2]
-		oldcoord = self.keypoint[3]
-		if cX[0] - cY[0] < 0.0:
-			oldcoord = self.keypoint[0]
-		xaxis = np.array([oldcoord[0], 0.0, 0.0])
-		oldcoord = np.subtract(oldcoord, xaxis)
-		point = np.subtract(point, xaxis)
-		theta, vdir = self.__get_axis_angle(oldcoord, point)
-		new_atom = []		
-		cmin = 1.0e-4
-		for i in range(natom):
-			record = atom[i]
-			if record['iflag'] != 0 and theta > cmin:
-				# A-X --- Y-M, the M and X vector
-				coord = self.point_rotate_ar_vector(record['coord'], vdir, theta)
-			else:
-				coord = record['coord']
-			tmp_record = {'name': record['name'], 'coord': coord, 'iflag': record['iflag'], 'index': grid['index'] }
-			new_atom.append(tmp_record)
-		self.tmp_mol = {'natom':natom, 'atom':new_atom, 'title':title}	
-		return	        
-    def mapping(self):
-        pass
+                
+
         
     def mk_frg(self, mol, sitelist):
         """ a list of mole """
