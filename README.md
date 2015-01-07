@@ -2,7 +2,7 @@ ffdev
 =====
 
 force field development and related tools
-this is compatiable with some paper in JCC.
+this is compatiable with my paper in JCC.
 
 
 please take care to use this tools, since it is just under development.
