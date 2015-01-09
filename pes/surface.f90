@@ -1,3 +1,5 @@
+! pes for c3 grid by prof. Z. Lan
+! 2014.12
       program main
       implicit none
       double precision ::   v_1, v_2, theta, rho
