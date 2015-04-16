@@ -10,7 +10,6 @@
 
 import os
 import copy
-import numpy as np
 
 import shutil
 
@@ -42,7 +41,7 @@ class xyzFormat:
             line = fpin.readline()
             rec = line.split()
             name, x, y, z= rec[0:4]            
-            coord = np.array([float(x),float(y),float(z)])
+            coord = [float(x),float(y),float(z)]
             atom_name.append(name)
             geom.append(coord)
         mol = {'title':title, 'n_atom': n_atom, 'geom':geom, 'name': atom_name}
@@ -134,26 +133,42 @@ class xyzFormat:
             mol = model[i]
             myfile = filename + "." + str(i)
             self.dump_once(mol, myfile)
+            print "MOL %d done" % i
         os.chdir("../")    
         return    
  
+    def print_mol(self, mol):
+        """ print mol into string """
+        mystr = ""
+        title = mol['title']
+        n_atom = mol['n_atom']
+        geom = mol['geom']
+        name = mol['name']
+        mystr += "%10d\n" % n_atom
+        mystr += title + "\n"
+        for i in xrange(n_atom):
+            pos = geom[i]
+            atom_name = name[i]
+            mystr += "%10s%12.6f%12.6f%12.6f\n" % (atom_name, pos[0], pos[1], pos[2])
+        return mystr
+        
     def dump(self, filename="punch.xyz"):
         """ write all xyz files """
-        mydir = self.config['mydir']
-        if os.path.isdir(mydir):
-            os.chdir(mydir)
+        fp = open(filename, "w")
         model = self.model
         for mol in model:
-            self.dump_once(mol, filename)
+            mystr = self.print_mol(mol)
+            print >>fp, "%s" % mystr,
+        fp.close()    
         return    
  
 if __name__ == "__main__":
     
     xyz = xyzFormat()
-    xyz.read(filename="./tcl/dump.xyz")
+    xyz.read(filename="./dump.xyz")
     xyz.modify()
-    xyz.dump_many()
     xyz.dump()
+    xyz.dump_many()
 
 
 
