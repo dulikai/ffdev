@@ -43,6 +43,8 @@ class bInterpolation():
         return name, coord
 
     def singlexyz(filename = "abc.xyz"):
+    
+    def singlexyz(filename = "abc.xyz"):
         """ read in a xyz format file """
         fp = open(filename, "r")
         n_site = int(fp.readline())
